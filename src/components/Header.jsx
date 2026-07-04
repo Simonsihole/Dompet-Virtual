@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import { MagnifyingGlass, User } from '@phosphor-icons/react';
 import SearchPanel from './SearchPanel';
 import NotificationsDropdown, { NotificationBell } from './NotificationsDropdown';
@@ -62,10 +62,13 @@ export default function Header() {
           </div>
 
           {/* Avatar */}
-          <div className="w-7 h-7 rounded-full flex items-center justify-center ml-1 border"
-            style={{ background: 'var(--bg-elevated)', borderColor: 'var(--border)', color: 'var(--text-primary)' }}>
+          <Link 
+            to="/settings"
+            className="w-7 h-7 rounded-full flex items-center justify-center ml-1 border hover:opacity-80 transition-opacity"
+            style={{ background: 'var(--bg-elevated)', borderColor: 'var(--border)', color: 'var(--text-primary)' }}
+          >
             <User size={14} weight="duotone" />
-          </div>
+          </Link>
         </div>
       </header>
 

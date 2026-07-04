@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
-import { WhatsappLogo, CheckCircle, Warning, Spinner, Trash, PencilSimple } from '@phosphor-icons/react';
+import { WhatsappLogo, CheckCircle, Warning, Spinner, Trash, PencilSimple, SignOut } from '@phosphor-icons/react';
 
 export default function Settings() {
-  const { user, isDemo } = useAuth();
+  const { user, isDemo, logout } = useAuth();
   const [phone, setPhone] = useState('');
   const [currentPhone, setCurrentPhone] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -209,6 +209,17 @@ export default function Settings() {
             </div>
           </form>
         )}
+      </div>
+
+      <div className="bg-[#0A0A0A] border border-white/[0.04] rounded-2xl p-6 shadow-sm max-w-xl">
+        <h2 className="text-[15px] font-medium text-zinc-100 mb-4">Account Actions</h2>
+        <button
+          onClick={logout}
+          className="w-full flex items-center justify-center gap-2 py-3 bg-red-500/5 border border-red-500/10 text-red-400 rounded-xl hover:bg-red-500/10 hover:border-red-500/20 transition-all font-medium text-[14px]"
+        >
+          <SignOut size={18} weight="bold" />
+          Log out of Dompet
+        </button>
       </div>
     </div>
   );
