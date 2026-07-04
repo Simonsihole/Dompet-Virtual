@@ -1,0 +1,117 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --accent:        #22c55e;
+    --accent-dim:    #16a34a;
+    --accent-muted:  rgba(34,197,94,0.12);
+    --bg:            #0a0a0b;
+    --bg-card:       #111113;
+    --bg-elevated:   #18181b;
+    --border:        rgba(255,255,255,0.07);
+    --border-strong: rgba(255,255,255,0.13);
+    --text-primary:  #f4f4f5;
+    --text-muted:    #71717a;
+    --text-subtle:   #3f3f46;
+    --red:           #f87171;
+    --blue:          #60a5fa;
+    --amber:         #fbbf24;
+    --purple:        #a78bfa;
+    --radius-sm:     6px;
+    --radius:        12px;
+    --radius-lg:     18px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
+}
+
+@layer components {
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+  }
+
+  .card-elevated {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+  }
+
+  .label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .mono {
+    font-family: 'Geist Mono', monospace;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .btn-ghost:hover {
+    color: var(--text-primary);
+    border-color: var(--border-strong);
+    background: var(--bg-elevated);
+  }
+  .btn-ghost:active { transform: scale(0.98); }
+
+  .btn-accent {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--accent);
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .btn-accent:hover { background: var(--accent-dim); }
+  .btn-accent:active { transform: scale(0.98); }
+}
