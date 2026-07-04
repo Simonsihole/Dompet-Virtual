@@ -6,10 +6,14 @@ import {
   WhatsappLogo,
   Wallet,
   SquaresFour,
-  Receipt
+  Receipt,
+  Gear,
+  SignOut
 } from '@phosphor-icons/react';
+import { useAuth } from '../context/AuthContext';
 
 export default function Sidebar() {
+  const { signOut, isDemo } = useAuth();
   return (
     <aside
       className="w-56 min-h-screen hidden md:flex flex-col flex-shrink-0"
@@ -39,7 +43,7 @@ export default function Sidebar() {
 
       {/* Nav */}
       <nav className="flex-1 px-2 py-3 space-y-0.5">
-        <NavLink to="/" end className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-[12px] text-[14px] font-medium transition-all ${isActive ? 'active-nav' : 'text-[var(--text-muted)] hover:bg-[var(--bg-card)]'}`}>
+        <NavLink to="/dashboard" end className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-[12px] text-[14px] font-medium transition-all ${isActive ? 'active-nav' : 'text-[var(--text-muted)] hover:bg-[var(--bg-card)]'}`}>
           <SquaresFour size={20} weight="duotone" /> Dashboard
         </NavLink>
         <NavLink to="/transactions" className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-[12px] text-[14px] font-medium transition-all ${isActive ? 'active-nav' : 'text-[var(--text-muted)] hover:bg-[var(--bg-card)]'}`}>
@@ -54,28 +58,27 @@ export default function Sidebar() {
         <NavLink to="/chat" className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-[12px] text-[14px] font-medium transition-all ${isActive ? 'active-nav' : 'text-[var(--text-muted)] hover:bg-[var(--bg-card)]'}`}>
           <WhatsappLogo size={20} weight="duotone" /> WhatsApp
         </NavLink>
+        <NavLink to="/settings" className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-[12px] text-[14px] font-medium transition-all ${isActive ? 'active-nav' : 'text-[var(--text-muted)] hover:bg-[var(--bg-card)]'}`}>
+          <Gear size={20} weight="duotone" /> Settings
+        </NavLink>
       </nav>
 
-      {/* Connect CTA */}
+      {/* User Actions */}
       <div className="px-3 pb-4">
         <div
-          className="rounded-[10px] p-3"
+          className="rounded-[10px] p-3 flex flex-col gap-2"
           style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)' }}
         >
           <p className="text-[11px] font-semibold mb-0.5" style={{ color: 'var(--text-primary)' }}>
-            Connect WhatsApp
+            Account
           </p>
-          <p className="text-[11px] mb-2.5" style={{ color: 'var(--text-muted)', lineHeight: '1.5' }}>
-            Log expenses by chat.
-          </p>
-          <a
-            href="/chat"
-            className="btn-accent w-full justify-center text-[12px] py-1.5"
-            style={{ borderRadius: '6px' }}
+          <button
+            onClick={() => signOut()}
+            className="flex items-center gap-2 text-[12px] py-1.5 px-2 rounded-lg transition-colors hover:bg-red-500/10 text-red-400 font-medium"
           >
-            <WhatsappLogo size={13} weight="fill" />
-            Open Chat
-          </a>
+            <SignOut size={14} weight="bold" />
+            {isDemo ? 'Exit Demo' : 'Sign out'}
+          </button>
         </div>
       </div>
     </aside>

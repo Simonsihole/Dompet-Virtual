@@ -22,8 +22,8 @@ router.get('/monthly', async (req, res) => {
           COALESCE(SUM(CASE WHEN type = 'income'  THEN amount ELSE 0 END), 0) as income,
           COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0) as expenses
         FROM transactions
-        WHERE created_at >= $1 AND created_at <= $2
-      `, [start, end]);
+        WHERE created_at >= $1 AND created_at <= $2 AND user_id = $3
+      `, [start, end, req.user.sub]);
 
       const row = rows[0];
 
@@ -57,13 +57,14 @@ router.get('/categories', async (req, res) => {
       Other:         '#9ca3af',
     };
 
+    const userId = req.user.sub;
     const { rows } = await db.query(`
       SELECT category, SUM(amount) as value
       FROM transactions
-      WHERE type = 'expense' AND created_at >= $1 AND created_at <= $2
+      WHERE type = 'expense' AND created_at >= $1 AND created_at <= $2 AND user_id = $3
       GROUP BY category
       ORDER BY value DESC
-    `, [monthStart, monthEnd]);
+    `, [monthStart, monthEnd, userId]);
 
     const data = rows.map((r) => ({
       name:  r.category,

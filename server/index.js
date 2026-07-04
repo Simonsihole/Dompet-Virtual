@@ -20,14 +20,17 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+const { requireAuth } = require('./lib/auth');
+
 // ── Routes ────────────────────────────────────────────────────────────────────
-app.use('/api/transactions',       transactionsRouter);
-app.use('/api/balance',            balanceRouter);
-app.use('/api/analytics',          analyticsRouter);
-app.use('/api/webhook/whatsapp',   webhookRouter);
-app.use('/api/chat',               require('./routes/chat'));
-app.use('/api/notifications',      notificationsRouter);
-app.use('/api/budgets',            budgetsRouter);
+app.use('/api/webhook/whatsapp',   webhookRouter); // Webhook has its own auth via Twilio phone mapping
+
+app.use('/api/transactions',       requireAuth, transactionsRouter);
+app.use('/api/balance',            requireAuth, balanceRouter);
+app.use('/api/analytics',          requireAuth, analyticsRouter);
+app.use('/api/chat',               requireAuth, require('./routes/chat'));
+app.use('/api/notifications',      requireAuth, notificationsRouter);
+app.use('/api/budgets',            requireAuth, budgetsRouter);
 
 // ── Health check ──────────────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {

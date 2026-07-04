@@ -12,13 +12,16 @@ router.get('/', async (req, res) => {
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
     const monthEnd   = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59).toISOString();
 
+    const userId = req.user.sub;
+    
     // All-time totals for running balance
     const allTimeRes = await db.query(`
       SELECT
         COALESCE(SUM(CASE WHEN type = 'income'  THEN amount ELSE 0 END), 0) as total_income,
         COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0) as total_expenses
       FROM transactions
-    `);
+      WHERE user_id = $1
+    `, [userId]);
     const allTime = allTimeRes.rows[0];
 
     // This month
@@ -27,8 +30,8 @@ router.get('/', async (req, res) => {
         COALESCE(SUM(CASE WHEN type = 'income'  THEN amount ELSE 0 END), 0) as income,
         COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0) as expenses
       FROM transactions
-      WHERE created_at >= $1 AND created_at <= $2
-    `, [monthStart, monthEnd]);
+      WHERE created_at >= $1 AND created_at <= $2 AND user_id = $3
+    `, [monthStart, monthEnd, userId]);
     const thisMonth = thisMonthRes.rows[0];
 
     const totalIncome = Number(allTime.total_income);

@@ -23,7 +23,8 @@ router.get('/usage', async (req, res) => {
     const start = new Date(year, month - 1, 1).toISOString();
     const end   = new Date(year, month, 0, 23, 59, 59).toISOString();
 
-    const { rows: budgets } = await db.query('SELECT * FROM budgets WHERE month = $1 AND year = $2', [month, year]);
+    const userId = req.user.sub;
+    const { rows: budgets } = await db.query('SELECT * FROM budgets WHERE month = $1 AND year = $2 AND user_id = $3', [month, year, userId]);
     
     if (budgets.length === 0) {
       return res.json([]);
@@ -32,9 +33,9 @@ router.get('/usage', async (req, res) => {
     const { rows: spending } = await db.query(`
       SELECT category, SUM(amount) as total
       FROM transactions
-      WHERE type = 'expense' AND created_at >= $1 AND created_at <= $2
+      WHERE type = 'expense' AND created_at >= $1 AND created_at <= $2 AND user_id = $3
       GROUP BY category
-    `, [start, end]);
+    `, [start, end, userId]);
 
     const spendingMap = Object.fromEntries(spending.map(s => [s.category, Number(s.total)]));
 
@@ -58,7 +59,7 @@ router.get('/usage', async (req, res) => {
 // ── GET /api/budgets ─────────────────────────────────────────────────────────
 router.get('/', async (req, res) => {
   try {
-    const { rows } = await db.query('SELECT * FROM budgets ORDER BY year DESC, month DESC, category ASC');
+    const { rows } = await db.query('SELECT * FROM budgets WHERE user_id = $1 ORDER BY year DESC, month DESC, category ASC', [req.user.sub]);
     res.json(rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -68,6 +69,7 @@ router.get('/', async (req, res) => {
 // ── POST /api/budgets ────────────────────────────────────────────────────────
 router.post('/', async (req, res) => {
   try {
+    const userId = req.user.sub;
     const parsed = BudgetSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ error: 'Validation failed', details: parsed.error.flatten() });
@@ -76,10 +78,10 @@ router.post('/', async (req, res) => {
     const { category, monthly_limit, month, year } = parsed.data;
 
     const { rows } = await db.query(`
-      INSERT INTO budgets (category, monthly_limit, month, year)
-      VALUES ($1, $2, $3, $4)
+      INSERT INTO budgets (category, monthly_limit, month, year, user_id)
+      VALUES ($1, $2, $3, $4, $5)
       RETURNING *
-    `, [category, monthly_limit, month, year]);
+    `, [category, monthly_limit, month, year, userId]);
 
     res.status(201).json(rows[0]);
   } catch (err) {
@@ -93,6 +95,7 @@ router.post('/', async (req, res) => {
 // ── PUT /api/budgets/:id ─────────────────────────────────────────────────────
 router.put('/:id', async (req, res) => {
   try {
+    const userId = req.user.sub;
     const parsed = BudgetSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ error: 'Validation failed', details: parsed.error.flatten() });
@@ -103,11 +106,11 @@ router.put('/:id', async (req, res) => {
     const { rows, rowCount } = await db.query(`
       UPDATE budgets 
       SET category = $1, monthly_limit = $2, month = $3, year = $4, updated_at = NOW()
-      WHERE id = $5
+      WHERE id = $5 AND user_id = $6
       RETURNING *
-    `, [category, monthly_limit, month, year, req.params.id]);
+    `, [category, monthly_limit, month, year, req.params.id, userId]);
 
-    if (rowCount === 0) return res.status(404).json({ error: 'Budget not found' });
+    if (rowCount === 0) return res.status(404).json({ error: 'Budget not found or unauthorized' });
 
     res.json(rows[0]);
   } catch (err) {
@@ -121,8 +124,9 @@ router.put('/:id', async (req, res) => {
 // ── DELETE /api/budgets/:id ──────────────────────────────────────────────────
 router.delete('/:id', async (req, res) => {
   try {
-    const { rows, rowCount } = await db.query('DELETE FROM budgets WHERE id = $1 RETURNING *', [req.params.id]);
-    if (rowCount === 0) return res.status(404).json({ error: 'Budget not found' });
+    const userId = req.user.sub;
+    const { rows, rowCount } = await db.query('DELETE FROM budgets WHERE id = $1 AND user_id = $2 RETURNING *', [req.params.id, userId]);
+    if (rowCount === 0) return res.status(404).json({ error: 'Budget not found or unauthorized' });
 
     res.json({ deleted: rows[0] });
   } catch (err) {

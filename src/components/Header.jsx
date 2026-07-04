@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { MagnifyingGlass } from '@phosphor-icons/react';
+import { MagnifyingGlass, User } from '@phosphor-icons/react';
 import SearchPanel from './SearchPanel';
 import NotificationsDropdown, { NotificationBell } from './NotificationsDropdown';
 import { useApi } from '../lib/useApi';
@@ -62,9 +62,9 @@ export default function Header() {
           </div>
 
           {/* Avatar */}
-          <div className="w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-bold ml-1"
-            style={{ background: 'var(--accent)', color: '#fff' }}>
-            S
+          <div className="w-7 h-7 rounded-full flex items-center justify-center ml-1 border"
+            style={{ background: 'var(--bg-elevated)', borderColor: 'var(--border)', color: 'var(--text-primary)' }}>
+            <User size={14} weight="duotone" />
           </div>
         </div>
       </header>

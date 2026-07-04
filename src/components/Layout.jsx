@@ -8,16 +8,12 @@ export default function Layout() {
   const isChat = pathname === '/chat';
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen" style={{ background: 'var(--bg)' }}>
+    <div className="flex flex-col md:flex-row h-screen overflow-hidden" style={{ background: 'var(--bg)' }}>
       <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden w-full md:w-auto">
+      <div className="flex-1 flex flex-col min-w-0">
         <Header />
         <main
-          className="flex-1 overflow-y-auto w-full"
-          style={{ 
-            padding: isChat ? 0 : '16px',
-            paddingBottom: 'calc(80px + env(safe-area-inset-bottom))'
-          }}
+          className={`flex-1 flex flex-col w-full ${isChat ? 'overflow-hidden p-0 pb-[80px] md:pb-0' : 'overflow-y-auto p-4 pb-[calc(80px+env(safe-area-inset-bottom))] md:pb-4'}`}
         >
           <Outlet />
         </main>

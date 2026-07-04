@@ -17,14 +17,15 @@ const TransactionSchema = z.object({
 // ── GET /api/transactions ────────────────────────────────────────────────────
 router.get('/', async (req, res) => {
   try {
+    const userId   = req.user.sub;
     const limit    = parseInt(req.query.limit, 10) || 50;
     const category = req.query.category;
     const type     = req.query.type;
     const search   = req.query.search;
     
-    let sql = 'SELECT * FROM transactions WHERE 1=1';
-    const params = [];
-    let paramIndex = 1;
+    let sql = 'SELECT * FROM transactions WHERE user_id = $1';
+    const params = [userId];
+    let paramIndex = 2;
 
     if (category) {
       sql += ` AND category = $${paramIndex}`;
@@ -61,6 +62,7 @@ router.get('/', async (req, res) => {
 // ── POST /api/transactions ───────────────────────────────────────────────────
 router.post('/', async (req, res) => {
   try {
+    const userId = req.user.sub;
     const parsed = TransactionSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ error: 'Validation failed', details: parsed.error.flatten() });
@@ -68,10 +70,10 @@ router.post('/', async (req, res) => {
 
     const { type, amount, category, description, source } = parsed.data;
     const { rows: inserted } = await db.query(`
-      INSERT INTO transactions (type, amount, category, description, source)
-      VALUES ($1, $2, $3, $4, $5)
+      INSERT INTO transactions (type, amount, category, description, source, user_id)
+      VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *
-    `, [type, amount, category, description, source]);
+    `, [type, amount, category, description, source, userId]);
 
     const created = inserted[0];
 
@@ -81,7 +83,7 @@ router.post('/', async (req, res) => {
       const month = now.getMonth() + 1;
       const year = now.getFullYear();
       
-      const { rows: budgets } = await db.query('SELECT * FROM budgets WHERE category = $1 AND month = $2 AND year = $3', [category, month, year]);
+      const { rows: budgets } = await db.query('SELECT * FROM budgets WHERE category = $1 AND month = $2 AND year = $3 AND user_id = $4', [category, month, year, userId]);
       const budget = budgets[0];
       
       if (budget) {
@@ -89,8 +91,8 @@ router.post('/', async (req, res) => {
         const end   = new Date(year, month, 0, 23, 59, 59).toISOString();
         const { rows: spendResult } = await db.query(`
           SELECT SUM(amount) as total FROM transactions
-          WHERE type = 'expense' AND category = $1 AND created_at >= $2 AND created_at <= $3
-        `, [category, start, end]);
+          WHERE type = 'expense' AND category = $1 AND created_at >= $2 AND created_at <= $3 AND user_id = $4
+        `, [category, start, end, userId]);
         
         const spent = Number(spendResult[0].total) || 0;
         const usage = spent / budget.monthly_limit;
@@ -101,9 +103,9 @@ router.post('/', async (req, res) => {
           const title = isOver ? `${category} budget exceeded` : `${category} budget at ${Math.round(usage * 100)}%`;
           
           await db.query(`
-            INSERT INTO notifications (type, title, body)
-            VALUES ($1, $2, $3)
-          `, [notifType, title, `Spent Rp ${(spent/1000).toFixed(0)}rb of Rp ${(budget.monthly_limit/1000).toFixed(0)}rb`]);
+            INSERT INTO notifications (type, title, body, user_id)
+            VALUES ($1, $2, $3, $4)
+          `, [notifType, title, `Spent Rp ${(spent/1000).toFixed(0)}rb of Rp ${(budget.monthly_limit/1000).toFixed(0)}rb`, userId]);
         }
       }
     }

@@ -4,16 +4,18 @@ import {
   Receipt,
   ChartPieSlice,
   Wallet,
-  WhatsappLogo
+  WhatsappLogo,
+  Gear
 } from '@phosphor-icons/react';
 
 export default function BottomNav() {
   const links = [
-    { to: '/', end: true, icon: SquaresFour, label: 'Dash' },
+    { to: '/dashboard', end: true, icon: SquaresFour, label: 'Dash' },
     { to: '/transactions', end: false, icon: Receipt, label: 'Trans' },
     { to: '/analytics', end: false, icon: ChartPieSlice, label: 'Stats' },
     { to: '/budget', end: false, icon: Wallet, label: 'Budget' },
     { to: '/chat', end: false, icon: WhatsappLogo, label: 'Chat' },
+    { to: '/settings', end: false, icon: Gear, label: 'Settings' },
   ];
 
   return (

@@ -55,8 +55,7 @@ export default function Chat() {
 
   return (
     <div
-      className="flex flex-col"
-      style={{ height: 'calc(100vh - 56px)' }}
+      className="flex-1 flex flex-col min-h-0"
     >
       {/* Header bar */}
       <div
@@ -117,7 +116,8 @@ export default function Chat() {
       </div>
 
       {/* Input */}
-      <div
+      <form
+        onSubmit={(e) => { e.preventDefault(); send(); }}
         className="flex items-center gap-2 px-4 py-3 flex-shrink-0"
         style={{ background: 'var(--bg-card)', borderTop: '1px solid var(--border)' }}
       >
@@ -127,15 +127,17 @@ export default function Chat() {
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }}
           placeholder='Coba "beli makan 50rb" atau "bantuan"'
-          className="flex-1 resize-none text-[13px] bg-transparent outline-none"
+          className="flex-1 resize-none text-[13px] outline-none px-3 py-2.5 rounded-lg transition-colors focus:border-white/20"
           style={{
+            background: 'rgba(255, 255, 255, 0.03)',
+            border: '1px solid var(--border)',
             color: 'var(--text-primary)',
             fontFamily: 'Geist, sans-serif',
             lineHeight: '1.5',
           }}
         />
         <button
-          onClick={send}
+          type="submit"
           disabled={!input.trim()}
           className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all"
           style={{
@@ -149,7 +151,7 @@ export default function Chat() {
             style={{ color: input.trim() ? '#fff' : 'var(--text-muted)' }}
           />
         </button>
-      </div>
+      </form>
     </div>
   );
 }
