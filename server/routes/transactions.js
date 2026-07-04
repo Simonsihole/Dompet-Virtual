@@ -1,65 +1,65 @@
+'use strict';
+
 const express = require('express');
 const { z }   = require('zod');
 const db      = require('../db');
 
 const router = express.Router();
 
-// ── Validation schema ────────────────────────────────────────────────────────
 const TransactionSchema = z.object({
   type:        z.enum(['income', 'expense']),
   amount:      z.number().int().positive(),
-  category:    z.string().min(1).max(50).default('Other'),
-  description: z.string().min(1).max(255),
+  category:    z.string().min(1),
+  description: z.string().min(1),
   source:      z.enum(['manual', 'whatsapp']).default('manual'),
 });
 
 // ── GET /api/transactions ────────────────────────────────────────────────────
-// Query params: type, category, from (date), to (date), search, limit, offset
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   try {
-    const { type, category, from, to, search, limit = 50, offset = 0 } = req.query;
-
-    let sql    = 'SELECT * FROM transactions WHERE 1=1';
-    let countSql = 'SELECT COUNT(*) as n FROM transactions WHERE 1=1';
-    const params = [];
-
-    if (type)     { sql += ' AND type = ?';                   countSql += ' AND type = ?';       params.push(type); }
-    if (category) { sql += ' AND category = ?';               countSql += ' AND category = ?';   params.push(category); }
-    if (from)     { sql += ' AND created_at >= ?';            countSql += ' AND created_at >= ?'; params.push(from); }
-    if (to)       { sql += ' AND created_at <= ?';            countSql += ' AND created_at <= ?'; params.push(to + 'T23:59:59Z'); }
+    const limit    = parseInt(req.query.limit, 10) || 50;
+    const category = req.query.category;
+    const type     = req.query.type;
+    const search   = req.query.search;
     
-    if (search) {
-      sql += ' AND (description LIKE ? OR category LIKE ? OR CAST(amount AS TEXT) LIKE ?)';
-      countSql += ' AND (description LIKE ? OR category LIKE ? OR CAST(amount AS TEXT) LIKE ?)';
-      const searchPattern = `%${search}%`;
-      params.push(searchPattern, searchPattern, searchPattern);
+    let sql = 'SELECT * FROM transactions WHERE 1=1';
+    const params = [];
+    let paramIndex = 1;
+
+    if (category) {
+      sql += ` AND category = $${paramIndex}`;
+      params.push(category);
+      paramIndex++;
     }
 
-    sql += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
-    const rowsParams = [...params, Number(limit), Number(offset)];
+    if (type) {
+      sql += ` AND type = $${paramIndex}`;
+      params.push(type);
+      paramIndex++;
+    }
 
-    const rows  = db.prepare(sql).all(...rowsParams);
-    const total = db.prepare(countSql).get(...params).n;
+    if (search) {
+      sql += ` AND (description ILIKE $${paramIndex} OR category ILIKE $${paramIndex})`;
+      params.push(`%${search}%`);
+      paramIndex++;
+    }
 
-    res.json({ data: rows, total, limit: Number(limit), offset: Number(offset) });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+    sql += ` ORDER BY created_at DESC LIMIT $${paramIndex}`;
+    params.push(limit);
 
-// ── GET /api/transactions/:id ────────────────────────────────────────────────
-router.get('/:id', (req, res) => {
-  try {
-    const row = db.prepare('SELECT * FROM transactions WHERE id = ?').get(req.params.id);
-    if (!row) return res.status(404).json({ error: 'Transaction not found' });
-    res.json(row);
+    const { rows } = await db.query(sql, params);
+
+    res.json({
+      data: rows,
+      count: rows.length,
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 // ── POST /api/transactions ───────────────────────────────────────────────────
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const parsed = TransactionSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -67,12 +67,13 @@ router.post('/', (req, res) => {
     }
 
     const { type, amount, category, description, source } = parsed.data;
-    const result = db.prepare(`
+    const { rows: inserted } = await db.query(`
       INSERT INTO transactions (type, amount, category, description, source)
-      VALUES (?, ?, ?, ?, ?)
-    `).run(type, amount, category, description, source);
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING *
+    `, [type, amount, category, description, source]);
 
-    const created = db.prepare('SELECT * FROM transactions WHERE id = ?').get(result.lastInsertRowid);
+    const created = inserted[0];
 
     // Budget check logic
     if (type === 'expense') {
@@ -80,56 +81,34 @@ router.post('/', (req, res) => {
       const month = now.getMonth() + 1;
       const year = now.getFullYear();
       
-      const budget = db.prepare('SELECT * FROM budgets WHERE category = ? AND month = ? AND year = ?').get(category, month, year);
+      const { rows: budgets } = await db.query('SELECT * FROM budgets WHERE category = $1 AND month = $2 AND year = $3', [category, month, year]);
+      const budget = budgets[0];
+      
       if (budget) {
         const start = new Date(year, month - 1, 1).toISOString();
         const end   = new Date(year, month, 0, 23, 59, 59).toISOString();
-        const spent = db.prepare(`
+        const { rows: spendResult } = await db.query(`
           SELECT SUM(amount) as total FROM transactions
-          WHERE type = 'expense' AND category = ? AND created_at >= ? AND created_at <= ?
-        `).get(category, start, end).total || 0;
+          WHERE type = 'expense' AND category = $1 AND created_at >= $2 AND created_at <= $3
+        `, [category, start, end]);
         
+        const spent = Number(spendResult[0].total) || 0;
         const usage = spent / budget.monthly_limit;
+        
         if (usage >= 0.8) {
           const isOver = usage >= 1;
           const notifType = isOver ? 'danger' : 'warning';
           const title = isOver ? `${category} budget exceeded` : `${category} budget at ${Math.round(usage * 100)}%`;
           
-          db.prepare(`
+          await db.query(`
             INSERT INTO notifications (type, title, body)
-            VALUES (?, ?, ?)
-          `).run(notifType, title, `Spent Rp ${(spent/1000).toFixed(0)}rb of Rp ${(budget.monthly_limit/1000).toFixed(0)}rb`);
+            VALUES ($1, $2, $3)
+          `, [notifType, title, `Spent Rp ${(spent/1000).toFixed(0)}rb of Rp ${(budget.monthly_limit/1000).toFixed(0)}rb`]);
         }
       }
     }
 
     res.status(201).json(created);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// ── DELETE /api/transactions/:id ─────────────────────────────────────────────
-router.delete('/:id', (req, res) => {
-  try {
-    const row = db.prepare('SELECT * FROM transactions WHERE id = ?').get(req.params.id);
-    if (!row) return res.status(404).json({ error: 'Transaction not found' });
-
-    db.prepare('DELETE FROM transactions WHERE id = ?').run(req.params.id);
-    res.json({ deleted: row });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// ── DELETE /api/transactions (last one — for "hapus terakhir" command) ────────
-router.delete('/last/one', (req, res) => {
-  try {
-    const row = db.prepare('SELECT * FROM transactions ORDER BY created_at DESC LIMIT 1').get();
-    if (!row) return res.status(404).json({ error: 'No transactions to delete' });
-
-    db.prepare('DELETE FROM transactions WHERE id = ?').run(row.id);
-    res.json({ deleted: row });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

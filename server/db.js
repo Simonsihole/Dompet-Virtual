@@ -1,66 +1,90 @@
-const Database = require('better-sqlite3');
-const path     = require('path');
+const { Pool } = require('pg');
 
-const DB_PATH = path.join(__dirname, 'data.db');
-const db      = new Database(DB_PATH);
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
 
-// Enable WAL mode for better concurrent read performance
-db.pragma('journal_mode = WAL');
-db.pragma('foreign_keys = ON');
+async function initDB() {
+  try {
+    const client = await pool.connect();
+    
+    // Transactions
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS transactions (
+        id          SERIAL PRIMARY KEY,
+        type        TEXT    NOT NULL CHECK(type IN ('income','expense')),
+        amount      INTEGER NOT NULL CHECK(amount > 0),
+        category    TEXT    NOT NULL DEFAULT 'Other',
+        description TEXT    NOT NULL DEFAULT '',
+        source      TEXT    NOT NULL DEFAULT 'manual' CHECK(source IN ('manual','whatsapp')),
+        created_at  TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+      );
+    `);
 
-// ── Schema ────────────────────────────────────────────────────────────────────
-db.exec(`
-  CREATE TABLE IF NOT EXISTS transactions (
-    id          INTEGER PRIMARY KEY AUTOINCREMENT,
-    type        TEXT    NOT NULL CHECK(type IN ('income','expense')),
-    amount      INTEGER NOT NULL CHECK(amount > 0),
-    category    TEXT    NOT NULL DEFAULT 'Other',
-    description TEXT    NOT NULL DEFAULT '',
-    source      TEXT    NOT NULL DEFAULT 'manual' CHECK(source IN ('manual','whatsapp')),
-    created_at  TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
-  );
+    // Categories
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS categories (
+        id    SERIAL PRIMARY KEY,
+        name  TEXT NOT NULL UNIQUE,
+        color TEXT NOT NULL DEFAULT '#9ca3af'
+      );
+    `);
 
-  CREATE TABLE IF NOT EXISTS categories (
-    id    INTEGER PRIMARY KEY AUTOINCREMENT,
-    name  TEXT NOT NULL UNIQUE,
-    color TEXT NOT NULL DEFAULT '#9ca3af'
-  );
+    // Notifications
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS notifications (
+        id          SERIAL PRIMARY KEY,
+        type        TEXT    NOT NULL DEFAULT 'info' CHECK(type IN ('info','success','warning','danger')),
+        title       TEXT    NOT NULL,
+        body        TEXT    NOT NULL,
+        is_read     INTEGER NOT NULL DEFAULT 0,
+        created_at  TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+      );
+    `);
 
-  CREATE TABLE IF NOT EXISTS notifications (
-    id          INTEGER PRIMARY KEY AUTOINCREMENT,
-    type        TEXT    NOT NULL DEFAULT 'info' CHECK(type IN ('info','success','warning','danger')),
-    title       TEXT    NOT NULL,
-    body        TEXT    NOT NULL,
-    is_read     INTEGER NOT NULL DEFAULT 0,
-    created_at  TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
-  );
+    // Budgets
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS budgets (
+        id             SERIAL PRIMARY KEY,
+        category       TEXT NOT NULL,
+        monthly_limit  INTEGER NOT NULL CHECK(monthly_limit > 0),
+        month          INTEGER NOT NULL,
+        year           INTEGER NOT NULL,
+        created_at     TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+        updated_at     TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+        UNIQUE(category, month, year)
+      );
+    `);
 
-  CREATE TABLE IF NOT EXISTS budgets (
-    id             INTEGER PRIMARY KEY AUTOINCREMENT,
-    category       TEXT NOT NULL,
-    monthly_limit  INTEGER NOT NULL CHECK(monthly_limit > 0),
-    month          INTEGER NOT NULL,
-    year           INTEGER NOT NULL,
-    created_at     TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
-    updated_at     TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
-    UNIQUE(category, month, year)
-  );
-`);
-
-// Seed categories if empty
-const catCount = db.prepare('SELECT COUNT(*) as n FROM categories').get().n;
-if (catCount === 0) {
-  const insert = db.prepare('INSERT INTO categories (name, color) VALUES (?, ?)');
-  const seedCats = db.transaction(() => {
-    insert.run('Food',          '#22c55e');
-    insert.run('Transport',     '#60a5fa');
-    insert.run('Shopping',      '#fbbf24');
-    insert.run('Bills',         '#f87171');
-    insert.run('Entertainment', '#a78bfa');
-    insert.run('Salary',        '#34d399');
-    insert.run('Other',         '#9ca3af');
-  });
-  seedCats();
+    // Seed categories if empty
+    const catRes = await client.query('SELECT COUNT(*) as n FROM categories');
+    if (parseInt(catRes.rows[0].n, 10) === 0) {
+      const seedCats = [
+        ['Food',          '#22c55e'],
+        ['Transport',     '#60a5fa'],
+        ['Shopping',      '#fbbf24'],
+        ['Bills',         '#f87171'],
+        ['Entertainment', '#a78bfa'],
+        ['Salary',        '#34d399'],
+        ['Other',         '#9ca3af'],
+      ];
+      
+      for (const [name, color] of seedCats) {
+        await client.query('INSERT INTO categories (name, color) VALUES ($1, $2)', [name, color]);
+      }
+    }
+    
+    client.release();
+    console.log('[db] PostgreSQL initialized');
+  } catch (err) {
+    console.error('[db] Initialization error:', err);
+  }
 }
 
-module.exports = db;
+// Call on startup
+initDB();
+
+module.exports = {
+  query: (text, params) => pool.query(text, params),
+  pool,
+};

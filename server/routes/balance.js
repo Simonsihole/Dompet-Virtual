@@ -5,7 +5,7 @@ const router = express.Router();
 
 // ── GET /api/balance ─────────────────────────────────────────────────────────
 // Returns current balance, this-month income, this-month expenses, savings rate
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   try {
     // Current month bounds (UTC)
     const now        = new Date();
@@ -13,32 +13,39 @@ router.get('/', (req, res) => {
     const monthEnd   = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59).toISOString();
 
     // All-time totals for running balance
-    const allTime = db.prepare(`
+    const allTimeRes = await db.query(`
       SELECT
         COALESCE(SUM(CASE WHEN type = 'income'  THEN amount ELSE 0 END), 0) as total_income,
         COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0) as total_expenses
       FROM transactions
-    `).get();
+    `);
+    const allTime = allTimeRes.rows[0];
 
     // This month
-    const thisMonth = db.prepare(`
+    const thisMonthRes = await db.query(`
       SELECT
         COALESCE(SUM(CASE WHEN type = 'income'  THEN amount ELSE 0 END), 0) as income,
         COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0) as expenses
       FROM transactions
-      WHERE created_at >= ? AND created_at <= ?
-    `).get(monthStart, monthEnd);
+      WHERE created_at >= $1 AND created_at <= $2
+    `, [monthStart, monthEnd]);
+    const thisMonth = thisMonthRes.rows[0];
 
-    const current     = allTime.total_income - allTime.total_expenses;
-    const savingsRate = thisMonth.income > 0
-      ? Math.round(((thisMonth.income - thisMonth.expenses) / thisMonth.income) * 100)
+    const totalIncome = Number(allTime.total_income);
+    const totalExpenses = Number(allTime.total_expenses);
+    const mIncome = Number(thisMonth.income);
+    const mExpenses = Number(thisMonth.expenses);
+
+    const current     = totalIncome - totalExpenses;
+    const savingsRate = mIncome > 0
+      ? Math.round(((mIncome - mExpenses) / mIncome) * 100)
       : 0;
 
     res.json({
       current,
-      income:      thisMonth.income,
-      expenses:    thisMonth.expenses,
-      savings:     thisMonth.income - thisMonth.expenses,
+      income:      mIncome,
+      expenses:    mExpenses,
+      savings:     mIncome - mExpenses,
       savingsRate,
     });
   } catch (err) {

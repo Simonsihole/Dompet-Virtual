@@ -7,7 +7,7 @@ const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct'
 
 // ── GET /api/analytics/monthly ───────────────────────────────────────────────
 // Last 6 months income vs expenses
-router.get('/monthly', (req, res) => {
+router.get('/monthly', async (req, res) => {
   try {
     const results = [];
     const now     = new Date();
@@ -17,18 +17,20 @@ router.get('/monthly', (req, res) => {
       const start = new Date(d.getFullYear(), d.getMonth(), 1).toISOString();
       const end   = new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59).toISOString();
 
-      const row = db.prepare(`
+      const { rows } = await db.query(`
         SELECT
           COALESCE(SUM(CASE WHEN type = 'income'  THEN amount ELSE 0 END), 0) as income,
           COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0) as expenses
         FROM transactions
-        WHERE created_at >= ? AND created_at <= ?
-      `).get(start, end);
+        WHERE created_at >= $1 AND created_at <= $2
+      `, [start, end]);
+
+      const row = rows[0];
 
       results.push({
         month:    MONTH_NAMES[d.getMonth()],
-        income:   row.income,
-        expenses: row.expenses,
+        income:   Number(row.income),
+        expenses: Number(row.expenses),
       });
     }
 
@@ -40,7 +42,7 @@ router.get('/monthly', (req, res) => {
 
 // ── GET /api/analytics/categories ───────────────────────────────────────────
 // This month spending by category
-router.get('/categories', (req, res) => {
+router.get('/categories', async (req, res) => {
   try {
     const now        = new Date();
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
@@ -55,17 +57,17 @@ router.get('/categories', (req, res) => {
       Other:         '#9ca3af',
     };
 
-    const rows = db.prepare(`
+    const { rows } = await db.query(`
       SELECT category, SUM(amount) as value
       FROM transactions
-      WHERE type = 'expense' AND created_at >= ? AND created_at <= ?
+      WHERE type = 'expense' AND created_at >= $1 AND created_at <= $2
       GROUP BY category
       ORDER BY value DESC
-    `).all(monthStart, monthEnd);
+    `, [monthStart, monthEnd]);
 
     const data = rows.map((r) => ({
       name:  r.category,
-      value: r.value,
+      value: Number(r.value),
       color: COLORS[r.category] ?? '#9ca3af',
     }));
 

@@ -44,7 +44,11 @@ app.use((err, _req, res, _next) => {
 });
 
 // ── Start ─────────────────────────────────────────────────────────────────────
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-  console.log(`Webhook endpoint: http://localhost:${PORT}/api/webhook/whatsapp`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Webhook endpoint: http://localhost:${PORT}/api/webhook/whatsapp`);
+  });
+}
+
+module.exports = app;
