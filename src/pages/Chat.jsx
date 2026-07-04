@@ -59,19 +59,32 @@ export default function Chat() {
     >
       {/* Header bar */}
       <div
-        className="flex items-center gap-3 px-5 py-3 flex-shrink-0"
+        className="flex items-center justify-between px-5 py-3 flex-shrink-0"
         style={{ background: 'var(--bg-card)', borderBottom: '1px solid var(--border)' }}
       >
-        <div
-          className="w-8 h-8 rounded-full flex items-center justify-center"
-          style={{ background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)' }}
+        <div className="flex items-center gap-3">
+          <div
+            className="w-8 h-8 rounded-full flex items-center justify-center"
+            style={{ background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)' }}
+          >
+            <WhatsappLogo size={15} weight="fill" style={{ color: 'var(--accent)' }} />
+          </div>
+          <div>
+            <p className="text-[13px] font-semibold" style={{ color: 'var(--text-primary)' }}>ExpenseBot</p>
+            <p className="text-[11px]" style={{ color: 'var(--accent)' }}>Online</p>
+          </div>
+        </div>
+
+        <a 
+          href="https://wa.me/14155238886" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="px-3 py-1.5 bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20 transition-colors rounded-full text-[12px] font-medium flex items-center gap-1.5 border border-[#25D366]/20"
         >
-          <WhatsappLogo size={15} weight="fill" style={{ color: 'var(--accent)' }} />
-        </div>
-        <div>
-          <p className="text-[13px] font-semibold" style={{ color: 'var(--text-primary)' }}>ExpenseBot</p>
-          <p className="text-[11px]" style={{ color: 'var(--accent)' }}>Online</p>
-        </div>
+          <WhatsappLogo size={14} weight="fill" />
+          <span className="hidden sm:inline">Open in WhatsApp</span>
+          <span className="sm:hidden">WhatsApp</span>
+        </a>
       </div>
 
       {/* Messages */}
