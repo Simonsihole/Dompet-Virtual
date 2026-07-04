@@ -1,6 +1,6 @@
 const express = require('express');
 const db      = require('../db');
-const parseWhatsAppMessage = require('../lib/parser');
+const { parse: parseWhatsAppMessage } = require('../lib/parser');
 
 const router = express.Router();
 
