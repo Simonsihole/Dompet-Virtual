@@ -4,16 +4,15 @@ const { parse: parseWhatsAppMessage } = require('../lib/parser');
 
 const router = express.Router();
 
-// ── POST /api/webhook/whatsapp ───────────────────────────────────────────────
 router.post('/', async (req, res) => {
   try {
-    const { Body, From } = req.body;
+    const { text } = req.body;
     
-    if (!Body) {
-      return res.status(400).send('No message body');
+    if (!text) {
+      return res.status(400).json({ error: 'No text provided' });
     }
 
-    const txData = await parseWhatsAppMessage(Body);
+    const txData = await parseWhatsAppMessage(text);
     let replyMessage = '';
     const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 });
 
@@ -25,6 +24,7 @@ router.post('/', async (req, res) => {
                      '💰 *Log Income*: "Gaji masuk 5jt"\n' +
                      '⚖️ *Check Balance*: "Saldo" atau "Berapa saldo"\n' +
                      '📅 *Today*: "Pengeluaran hari ini"\n' +
+                     '📊 *This Month*: "Bulan ini"\n' +
                      '🗑️ *Undo*: "Hapus terakhir"\n' +
                      '❓ *Help*: "Bantuan"';
     } else if (txData.intent === 'query_balance') {
@@ -71,14 +71,14 @@ router.post('/', async (req, res) => {
       if (txData.date) {
         query = `
           INSERT INTO transactions (type, amount, category, description, source, created_at)
-          VALUES ($1, $2, $3, $4, 'whatsapp', $5)
+          VALUES ($1, $2, $3, $4, 'web-chat', $5)
           RETURNING *
         `;
         params = [txData.type, txData.amount, txData.category, txData.description, txData.date];
       } else {
         query = `
           INSERT INTO transactions (type, amount, category, description, source)
-          VALUES ($1, $2, $3, $4, 'whatsapp')
+          VALUES ($1, $2, $3, $4, 'web-chat')
           RETURNING *
         `;
         params = [txData.type, txData.amount, txData.category, txData.description];
@@ -98,26 +98,14 @@ router.post('/', async (req, res) => {
       const allTime = allTimeRes.rows[0];
       const balance = Number(allTime.total_income) - Number(allTime.total_expenses);
 
-      // Create notification
-      await db.query(`
-        INSERT INTO notifications (type, title, body)
-        VALUES ('success', 'New WhatsApp Transaction', $1)
-      `, [`Logged ${formatter.format(created.amount)} for ${created.category}`]);
-
       replyMessage = `✅ Logged ${created.type === 'income' ? '+' : '-'}${formatter.format(created.amount)} for ${created.category}\n` +
                      `💰 Current Balance: ${formatter.format(balance)}`;
     }
 
-    // Twilio TwiML response
-    res.setHeader('Content-Type', 'text/xml');
-    res.send(`
-      <Response>
-        <Message>${replyMessage}</Message>
-      </Response>
-    `);
+    res.json({ reply: replyMessage });
   } catch (err) {
-    console.error('Webhook Error:', err);
-    res.status(500).send('Internal Server Error');
+    console.error('Chat Error:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 

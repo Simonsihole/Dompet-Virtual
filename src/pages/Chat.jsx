@@ -1,66 +1,56 @@
 import { useState, useRef, useEffect } from 'react';
 import { PaperPlaneTilt, WhatsappLogo } from '@phosphor-icons/react';
+import { api } from '../lib/api';
 
 const initialMessages = [
   {
     id: 1, from: 'bot',
-    text: 'Hi! Kirim pesan untuk catat pengeluaran atau pemasukan. Contoh: "beli kopi 35rb" atau "gaji 5jt".',
-    time: '08:00',
-  },
-  { id: 2, from: 'user', text: 'beli kopi 35rb',                        time: '08:01' },
-  { id: 3, from: 'bot',  text: 'Tercatat\nKopi  Rp 35,000\nKategori: Food\nSaldo: Rp 4,285,000', time: '08:01' },
-  { id: 4, from: 'user', text: 'grab ke kantor 25000',                   time: '08:15' },
-  { id: 5, from: 'bot',  text: 'Tercatat\nGrab  Rp 25,000\nKategori: Transport\nSaldo: Rp 4,260,000', time: '08:15' },
-  { id: 6, from: 'user', text: 'berapa pengeluaran hari ini?',            time: '12:00' },
-  {
-    id: 7, from: 'bot',
-    text: 'Pengeluaran hari ini:\n\nFood      Rp 35,000\nTransport  Rp 25,000\n\nTotal  Rp 60,000',
-    time: '12:00',
-  },
+    text: 'Hi! Kirim pesan untuk catat pengeluaran atau pemasukan. Contoh: "beli kopi 35rb" atau "bantuan".',
+    time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+  }
 ];
-
-function botReply(input) {
-  const lower = input.toLowerCase();
-  const amt   = input.match(/(\d[\d.,]*)\s*(rb|ribu|k|jt|juta)?/i);
-
-  if (lower.includes('berapa') || lower.includes('saldo')) {
-    return 'Saldo kamu:\n\nBalance    Rp 4,250,000\nIncome     Rp 7,500,000\nExpenses   Rp 3,250,000';
-  }
-  if (lower.includes('hari ini') || lower.includes('today')) {
-    return 'Hari ini:\n\nFood       Rp 80,000\nTransport  Rp 25,000\n\nTotal      Rp 105,000';
-  }
-  if (lower.includes('bantuan') || lower.includes('help')) {
-    return 'Bisa bantu:\n\n"beli nasi 25rb"       catat pengeluaran\n"terima gaji 5jt"     catat pemasukan\n"berapa saldo?"        cek saldo\n"pengeluaran hari ini" ringkasan harian';
-  }
-  if (amt) {
-    let amount = parseFloat(amt[1].replace(',', ''));
-    const unit = (amt[2] || '').toLowerCase();
-    if (['rb', 'ribu', 'k'].includes(unit)) amount *= 1000;
-    if (['jt', 'juta'].includes(unit))      amount *= 1000000;
-    const fmt = new Intl.NumberFormat('id-ID').format;
-    return `Tercatat\nPengeluaran  Rp ${fmt(amount)}\nKategori: Other\nSaldo: Rp ${fmt(4250000 - amount)}`;
-  }
-  return 'Tidak dimengerti. Coba ketik "bantuan".';
-}
 
 export default function Chat() {
   const [messages, setMessages] = useState(initialMessages);
   const [input,    setInput]    = useState('');
+  const [loading,  setLoading]  = useState(false);
   const bottomRef               = useRef(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, loading]);
 
-  const send = () => {
-    if (!input.trim()) return;
+  const send = async () => {
+    const text = input.trim();
+    if (!text || loading) return;
+    
     const now = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+    
+    // Add user message
     setMessages((prev) => [
       ...prev,
-      { id: Date.now(),     from: 'user', text: input.trim(), time: now },
-      { id: Date.now() + 1, from: 'bot',  text: botReply(input.trim()), time: now },
+      { id: Date.now(), from: 'user', text, time: now },
     ]);
+    
     setInput('');
+    setLoading(true);
+
+    try {
+      // Call backend brain
+      const res = await api.sendChat(text);
+      
+      setMessages((prev) => [
+        ...prev,
+        { id: Date.now(), from: 'bot', text: res.reply, time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) },
+      ]);
+    } catch (err) {
+      setMessages((prev) => [
+        ...prev,
+        { id: Date.now(), from: 'bot', text: "❌ Connection error. Is the server running?", time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) },
+      ]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

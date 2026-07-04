@@ -25,6 +25,7 @@ app.use('/api/transactions',       transactionsRouter);
 app.use('/api/balance',            balanceRouter);
 app.use('/api/analytics',          analyticsRouter);
 app.use('/api/webhook/whatsapp',   webhookRouter);
+app.use('/api/chat',               require('./routes/chat'));
 app.use('/api/notifications',      notificationsRouter);
 app.use('/api/budgets',            budgetsRouter);
 

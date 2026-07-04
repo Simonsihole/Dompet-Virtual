@@ -25,6 +25,9 @@ export const api = {
   deleteTransaction: (id)           => request(`/api/transactions/${id}`, { method: 'DELETE' }),
   deleteLastTransaction: ()         => request('/api/transactions/last/one', { method: 'DELETE' }),
 
+  // Chat
+  sendChat: (text)                  => request('/api/chat', { method: 'POST', body: JSON.stringify({ text }) }),
+
   // Analytics
   getMonthly:    ()                 => request('/api/analytics/monthly'),
   getCategories: ()                 => request('/api/analytics/categories'),

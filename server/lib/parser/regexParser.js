@@ -100,6 +100,21 @@ function isIncome(text) {
   return INCOME_KEYWORDS.some((kw) => lower.includes(kw));
 }
 
+function parseDate(text) {
+  const lower = text.toLowerCase();
+  if (lower.includes('kemarin lusa')) {
+    const d = new Date();
+    d.setDate(d.getDate() - 2);
+    return d.toISOString();
+  }
+  if (lower.includes('kemarin') || lower.includes('yesterday')) {
+    const d = new Date();
+    d.setDate(d.getDate() - 1);
+    return d.toISOString();
+  }
+  return null;
+}
+
 function parseWithRegex(rawText) {
   const text   = rawText.trim();
   const amount = parseAmount(text);
@@ -110,9 +125,10 @@ function parseWithRegex(rawText) {
   if (amount) {
     const type     = isIncome(text) ? 'income' : 'expense';
     const category = detectCategory(text, type);
+    const date     = parseDate(text);
     return {
       intent:      type === 'income' ? 'log_income' : 'log_expense',
-      type, amount, category,
+      type, amount, category, date,
       description: text.length > 100 ? text.slice(0, 100) : text,
     };
   }
