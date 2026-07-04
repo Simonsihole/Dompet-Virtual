@@ -12,7 +12,7 @@ import {
 export default function Sidebar() {
   return (
     <aside
-      className="w-56 min-h-screen flex flex-col"
+      className="w-56 min-h-screen hidden md:flex flex-col flex-shrink-0"
       style={{
         background: 'var(--bg-card)',
         borderRight: '1px solid var(--border)',

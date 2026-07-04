@@ -100,51 +100,55 @@ export default function Transactions() {
       </div>
 
       {/* Table */}
-      <div className="rounded-[18px] overflow-hidden"
-        style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-        <div className="grid grid-cols-[1fr_130px_100px_130px] px-5 py-2.5"
-          style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-elevated)' }}>
-          {['Description', 'Category', 'Date', 'Amount'].map((h, i) => (
-            <span key={h} className="label" style={{ textAlign: i === 3 ? 'right' : 'left' }}>{h}</span>
-          ))}
-        </div>
+      <div className="card !p-0 overflow-hidden flex flex-col min-h-[400px]">
+        <div className="overflow-x-auto w-full">
+          <div className="min-w-[700px]">
+            {/* Header */}
+            <div className="grid grid-cols-[1fr_130px_100px_130px] px-5 py-2.5"
+              style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-elevated)' }}>
+              {['Description', 'Category', 'Date', 'Amount'].map((h, i) => (
+                <span key={h} className="label" style={{ textAlign: i === 3 ? 'right' : 'left' }}>{h}</span>
+              ))}
+            </div>
 
-        {loading ? (
-          <div className="py-12 text-center animate-pulse" style={{ color: 'var(--text-muted)' }}>Loading...</div>
-        ) : filtered.length === 0 ? (
-          <div className="text-center py-16" style={{ color: 'var(--text-muted)' }}>
-            <Package size={28} className="mx-auto mb-2 opacity-40" />
-            <p className="text-[13px]">No transactions found</p>
-          </div>
-        ) : (
-          filtered.map((tx) => {
-            const cfg = categoryConfig[tx.category] ?? categoryConfig.Other;
-            const { Icon } = cfg;
-            const dateStr = tx.created_at ? new Date(tx.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) : '';
-            return (
-              <div key={tx.id}
-                className="grid grid-cols-[1fr_130px_100px_130px] px-5 py-3 items-center transition-colors"
-                style={{ borderBottom: '1px solid var(--border)' }}
-                onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
-                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}>
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0" style={{ background: cfg.bg }}>
-                    <Icon size={13} weight="bold" style={{ color: cfg.color }} />
-                  </div>
-                  <span className="text-[13px] font-medium truncate" style={{ color: 'var(--text-primary)' }}>{tx.description}</span>
-                </div>
-                <div>
-                  <span className="pill text-[11px]" style={{ background: cfg.bg, color: cfg.color }}>{tx.category}</span>
-                </div>
-                <span className="text-[12px] font-mono" style={{ color: 'var(--text-muted)' }}>{dateStr}</span>
-                <p className="text-[13px] font-mono font-semibold text-right"
-                  style={{ color: tx.type === 'income' ? 'var(--accent)' : 'var(--text-primary)' }}>
-                  {tx.type === 'income' ? '+' : '-'}{formatRupiah(tx.amount)}
-                </p>
+            {loading ? (
+              <div className="py-12 text-center animate-pulse" style={{ color: 'var(--text-muted)' }}>Loading...</div>
+            ) : filtered.length === 0 ? (
+              <div className="text-center py-16" style={{ color: 'var(--text-muted)' }}>
+                <Package size={28} className="mx-auto mb-2 opacity-40" />
+                <p className="text-[13px]">No transactions found</p>
               </div>
-            );
-          })
-        )}
+            ) : (
+              filtered.map((tx) => {
+                const cfg = categoryConfig[tx.category] ?? categoryConfig.Other;
+                const { Icon } = cfg;
+                const dateStr = tx.created_at ? new Date(tx.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) : '';
+                return (
+                  <div key={tx.id}
+                    className="grid grid-cols-[1fr_130px_100px_130px] px-5 py-3 items-center transition-colors"
+                    style={{ borderBottom: '1px solid var(--border)' }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
+                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}>
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0" style={{ background: cfg.bg }}>
+                        <Icon size={13} weight="bold" style={{ color: cfg.color }} />
+                      </div>
+                      <span className="text-[13px] font-medium truncate" style={{ color: 'var(--text-primary)' }}>{tx.description}</span>
+                    </div>
+                    <div>
+                      <span className="pill text-[11px]" style={{ background: cfg.bg, color: cfg.color }}>{tx.category}</span>
+                    </div>
+                    <span className="text-[12px] font-mono" style={{ color: 'var(--text-muted)' }}>{dateStr}</span>
+                    <p className="text-[13px] font-mono font-semibold text-right"
+                      style={{ color: tx.type === 'income' ? 'var(--accent)' : 'var(--text-primary)' }}>
+                      {tx.type === 'income' ? '+' : '-'}{formatRupiah(tx.amount)}
+                    </p>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
       </div>
 
       <p className="text-[11px] text-right" style={{ color: 'var(--text-subtle)' }}>

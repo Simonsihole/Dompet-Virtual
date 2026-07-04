@@ -17,7 +17,7 @@ export default function Analytics() {
     <div className="max-w-[1100px] space-y-4">
 
       {/* Summary strip */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {[
           {
             label: 'Total spent',
@@ -48,9 +48,9 @@ export default function Analytics() {
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-5 gap-4">
-        <div className="col-span-3"><MonthlyChart /></div>
-        <div className="col-span-2"><CategoryChart /></div>
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+        <div className="lg:col-span-3"><MonthlyChart /></div>
+        <div className="lg:col-span-2"><CategoryChart /></div>
       </div>
 
       {/* Breakdown */}
