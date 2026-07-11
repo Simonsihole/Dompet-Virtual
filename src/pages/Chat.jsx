@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { PaperPlaneTilt, WhatsappLogo } from '@phosphor-icons/react';
+import { PaperPlaneTilt, TelegramLogo } from '@phosphor-icons/react';
 import { api } from '../lib/api';
 
 const initialMessages = [
@@ -65,9 +65,9 @@ export default function Chat() {
         <div className="flex items-center gap-3">
           <div
             className="w-8 h-8 rounded-full flex items-center justify-center"
-            style={{ background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)' }}
+            style={{ background: 'rgba(59,130,246,0.15)', border: '1px solid rgba(59,130,246,0.3)' }}
           >
-            <WhatsappLogo size={15} weight="fill" style={{ color: 'var(--accent)' }} />
+            <TelegramLogo size={15} weight="fill" style={{ color: '#3b82f6' }} />
           </div>
           <div>
             <p className="text-[13px] font-semibold" style={{ color: 'var(--text-primary)' }}>ExpenseBot</p>
@@ -76,14 +76,14 @@ export default function Chat() {
         </div>
 
         <a 
-          href="https://wa.me/14155238886" 
+          href="https://t.me/DompetDashBot" 
           target="_blank" 
           rel="noopener noreferrer"
-          className="px-3 py-1.5 bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20 transition-colors rounded-full text-[12px] font-medium flex items-center gap-1.5 border border-[#25D366]/20"
+          className="px-3 py-1.5 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 transition-colors rounded-full text-[12px] font-medium flex items-center gap-1.5 border border-blue-500/20"
         >
-          <WhatsappLogo size={14} weight="fill" />
-          <span className="hidden sm:inline">Open in WhatsApp</span>
-          <span className="sm:hidden">WhatsApp</span>
+          <TelegramLogo size={14} weight="fill" />
+          <span className="hidden sm:inline">Open in Telegram</span>
+          <span className="sm:hidden">Telegram</span>
         </a>
       </div>
 

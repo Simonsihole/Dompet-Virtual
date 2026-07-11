@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Wallet, WhatsappLogo, ChartPieSlice, ShieldCheck, ArrowRight, Play } from '@phosphor-icons/react';
+import { Wallet, TelegramLogo, ChartPieSlice, ShieldCheck, ArrowRight, Play } from '@phosphor-icons/react';
 import { useAuth } from '../context/AuthContext';
 
 export default function Landing() {
@@ -46,7 +46,7 @@ export default function Landing() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
               </span>
-              Now native on WhatsApp
+              Now native on Telegram
             </div>
             
             <h1 className="text-[40px] md:text-[72px] font-medium tracking-[-0.04em] mb-6 max-w-4xl mx-auto leading-[1.05] text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60">
@@ -81,9 +81,9 @@ export default function Landing() {
             <div className="grid md:grid-cols-3 gap-4">
               <div className="bg-white/[0.02] border border-white/[0.04] p-8 rounded-2xl hover:bg-white/[0.03] transition-colors group">
                 <div className="w-10 h-10 rounded-lg bg-white/[0.04] border border-white/[0.08] flex items-center justify-center mb-16">
-                  <WhatsappLogo size={20} weight="duotone" className="text-zinc-300" />
+                  <TelegramLogo size={20} weight="duotone" className="text-zinc-300" />
                 </div>
-                <h3 className="text-[15px] font-medium mb-2 text-zinc-100">WhatsApp Native</h3>
+                <h3 className="text-[15px] font-medium mb-2 text-zinc-100">Telegram Native</h3>
                 <p className="text-zinc-500 text-[13px] leading-relaxed">
                   Log your daily spending seamlessly without leaving the chat app you already use every day.
                 </p>

@@ -11,7 +11,7 @@ const pageTitles = {
   '/transactions': { title: 'Transactions', subtitle: 'All activity' },
   '/analytics':    { title: 'Analytics',    subtitle: 'Spending insights' },
   '/budget':       { title: 'Budget',       subtitle: 'Monthly limits' },
-  '/chat':         { title: 'WhatsApp Bot', subtitle: 'Linked: +62 812 xxx xxxx' },
+  '/chat':         { title: 'Telegram Bot', subtitle: 'Linked: @DompetDashBot' },
 };
 
 export default function Header() {

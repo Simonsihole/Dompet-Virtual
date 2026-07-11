@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
-import { WhatsappLogo, CheckCircle, Warning, Spinner, Trash, PencilSimple, SignOut } from '@phosphor-icons/react';
+import { TelegramLogo, CheckCircle, Warning, Spinner, Trash, PencilSimple, SignOut } from '@phosphor-icons/react';
 
 export default function Settings() {
   const { user, isDemo, signOut } = useAuth();
@@ -15,9 +15,8 @@ export default function Settings() {
 
   useEffect(() => {
     if (isDemo) {
-      // In demo mode, we pretend a number is linked so they see what it looks like.
-      setCurrentPhone('6281234567890');
-      setPhone('6281234567890');
+      setCurrentPhone('123456789');
+      setPhone('123456789');
       return;
     }
     
@@ -56,19 +55,18 @@ export default function Settings() {
     setError(null);
 
     try {
-      const cleanPhone = phone.replace(/\D/g, '');
-      const formattedPhone = `whatsapp:+${cleanPhone}`;
+      const cleanPhone = phone.trim();
 
       const { error } = await supabase
         .from('profiles')
-        .upsert({ user_id: user.id, phone_number: formattedPhone }, { onConflict: 'user_id' });
+        .upsert({ user_id: user.id, phone_number: cleanPhone }, { onConflict: 'user_id' });
 
       if (error) throw error;
-      setMsg('WhatsApp number linked successfully!');
+      setMsg('Telegram ID linked successfully!');
       setCurrentPhone(cleanPhone);
       setIsEditing(false);
     } catch (err) {
-      setError(err.message || 'Failed to save phone number');
+      setError(err.message || 'Failed to save Telegram ID');
     } finally {
       setLoading(false);
     }
@@ -80,7 +78,7 @@ export default function Settings() {
       return;
     }
     
-    if (!window.confirm('Are you sure you want to remove your WhatsApp integration?')) return;
+    if (!window.confirm('Are you sure you want to remove your Telegram integration?')) return;
     
     setLoading(true);
     setMsg(null);
@@ -95,7 +93,7 @@ export default function Settings() {
       if (error) throw error;
       setCurrentPhone(null);
       setPhone('');
-      setMsg('WhatsApp integration removed.');
+      setMsg('Telegram integration removed.');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -114,12 +112,12 @@ export default function Settings() {
 
       <div className="bg-[#0A0A0A] border border-white/[0.04] rounded-2xl p-6 shadow-sm max-w-xl">
         <div className="flex items-center gap-4 mb-8">
-          <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl">
-            <WhatsappLogo size={24} weight="duotone" />
+          <div className="p-3 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-xl">
+            <TelegramLogo size={24} weight="duotone" />
           </div>
           <div>
-            <h2 className="text-[15px] font-medium text-zinc-100">WhatsApp Integration</h2>
-            <p className="text-[13px] text-zinc-500">Log expenses securely from your chat app.</p>
+            <h2 className="text-[15px] font-medium text-zinc-100">Telegram Integration</h2>
+            <p className="text-[13px] text-zinc-500">Log expenses securely from Telegram.</p>
           </div>
         </div>
 
@@ -141,16 +139,16 @@ export default function Settings() {
           <div className="bg-black border border-white/[0.04] p-5 rounded-xl flex items-center justify-between">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <p className="text-[12px] font-medium text-emerald-400 uppercase tracking-wider">Active</p>
+                <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                <p className="text-[12px] font-medium text-blue-400 uppercase tracking-wider">Active</p>
               </div>
-              <p className="text-zinc-200 font-mono text-lg">+{currentPhone}</p>
+              <p className="text-zinc-200 font-mono text-lg">{currentPhone}</p>
             </div>
             <div className="flex items-center gap-2">
               <button 
                 onClick={() => setIsEditing(true)} 
                 className="p-2.5 bg-white/[0.03] border border-white/[0.04] text-zinc-400 rounded-lg hover:text-zinc-100 hover:bg-white/[0.06] transition-colors"
-                title="Edit Number"
+                title="Edit ID"
               >
                 <PencilSimple size={16} weight="bold" />
               </button>
@@ -167,20 +165,19 @@ export default function Settings() {
           <form onSubmit={handleSave} className="space-y-5">
             <div>
               <label className="block text-[13px] font-medium text-zinc-400 mb-2">
-                Phone Number
+                Telegram Chat ID
               </label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 font-medium">+</span>
                 <input
-                  type="tel"
+                  type="text"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="628123456789"
-                  className="w-full pl-8 pr-4 py-3 bg-black border border-white/[0.08] rounded-xl focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 outline-none transition-all placeholder:text-zinc-700 text-zinc-100 font-mono"
+                  placeholder="123456789"
+                  className="w-full px-4 py-3 bg-black border border-white/[0.08] rounded-xl focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 outline-none transition-all placeholder:text-zinc-700 text-zinc-100 font-mono"
                 />
               </div>
               <p className="mt-2 text-[12px] text-zinc-500">
-                Omit the '+' sign. Include your country code (e.g. 62 for Indonesia).
+                Send <b>/start</b> to <a href="https://t.me/DompetDashBot" target="_blank" rel="noreferrer" className="text-blue-400 hover:underline">@DompetDashBot</a> to get your Chat ID.
               </p>
             </div>
 

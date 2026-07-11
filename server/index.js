@@ -23,7 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 const { requireAuth } = require('./lib/auth');
 
 // ── Routes ────────────────────────────────────────────────────────────────────
-app.use('/api/webhook/whatsapp',   webhookRouter); // Webhook has its own auth via Twilio phone mapping
+app.use('/api/webhook/telegram',   webhookRouter);
 
 app.use('/api/transactions',       requireAuth, transactionsRouter);
 app.use('/api/balance',            requireAuth, balanceRouter);
@@ -52,7 +52,7 @@ app.use((err, _req, res, _next) => {
 if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
-    console.log(`Webhook endpoint: http://localhost:${PORT}/api/webhook/whatsapp`);
+    console.log(`Webhook endpoint: http://localhost:${PORT}/api/webhook/telegram`);
   });
 }
 

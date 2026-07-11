@@ -1,31 +1,53 @@
 const express = require('express');
 const db      = require('../db');
-const { parse: parseWhatsAppMessage } = require('../lib/parser');
+const { parse: parseMessage } = require('../lib/parser');
 
 const router = express.Router();
+const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '8935944571:AAG3nTb1eOhMYFZZv3KyRGy6dYi9qsREEO4';
 
-// ── POST /api/webhook/whatsapp ───────────────────────────────────────────────
-router.post('/', async (req, res) => {
+async function sendTelegramMessage(chatId, text) {
   try {
-    const { Body, From } = req.body;
-    
-    if (!Body || !From) {
-      return res.status(400).send('No message body or from number');
-    }
+    await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'Markdown' })
+    });
+  } catch (err) {
+    console.error('Failed to send Telegram msg:', err);
+  }
+}
 
-    // Lookup user by phone number
-    const { rows: profileRows } = await db.query('SELECT user_id FROM profiles WHERE phone_number = $1', [From]);
+router.post('/', async (req, res) => {
+  // Always respond with 200 to acknowledge receipt to Telegram immediately
+  res.sendStatus(200);
+
+  try {
+    const { message } = req.body;
+    if (!message || !message.text) return;
+
+    const chatId = message.chat.id.toString();
+    const text = message.text.trim();
+
+    // Look up user by telegram chat ID
+    const { rows: profileRows } = await db.query('SELECT user_id FROM profiles WHERE phone_number = $1', [chatId]);
+    
     if (profileRows.length === 0) {
-      res.setHeader('Content-Type', 'text/xml');
-      return res.send(`
-        <Response>
-          <Message>Sorry, your number is not registered. Please log into the Expense Tracker dashboard and link your WhatsApp number.</Message>
-        </Response>
-      `);
+      if (text === '/start') {
+        await sendTelegramMessage(chatId, `👋 *Welcome to Dompet Expense Tracker!*\n\nTo link this bot to your account, please copy the ID below and paste it into the Telegram Integration section in your Dompet Settings page.\n\nYour Telegram ID: \`${chatId}\``);
+      } else {
+        await sendTelegramMessage(chatId, `❌ This chat is not linked to any Dompet account.\n\nPlease log in to Dompet, go to Settings, and link your account using this ID: \`${chatId}\``);
+      }
+      return;
     }
+    
     const userId = profileRows[0].user_id;
 
-    const txData = await parseWhatsAppMessage(Body);
+    if (text === '/start') {
+       await sendTelegramMessage(chatId, '✅ Your account is fully linked! You can now send me expenses like "Makan 50k" or "Gaji 5jt"!');
+       return;
+    }
+
+    const txData = await parseMessage(text);
     let replyMessage = '';
     const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 });
 
@@ -99,10 +121,8 @@ router.post('/', async (req, res) => {
       }
       
       const { rows } = await db.query(query, params);
-      
       const created = rows[0];
 
-      // Get updated balance
       const allTimeRes = await db.query(`
         SELECT
           COALESCE(SUM(CASE WHEN type = 'income'  THEN amount ELSE 0 END), 0) as total_income,
@@ -113,26 +133,19 @@ router.post('/', async (req, res) => {
       const allTime = allTimeRes.rows[0];
       const balance = Number(allTime.total_income) - Number(allTime.total_expenses);
 
-      // Create notification
       await db.query(`
         INSERT INTO notifications (type, title, body, user_id)
-        VALUES ('success', 'New WhatsApp Transaction', $1, $2)
+        VALUES ('success', 'New Telegram Transaction', $1, $2)
       `, [`Logged ${formatter.format(created.amount)} for ${created.category}`, userId]);
 
       replyMessage = `✅ Logged ${created.type === 'income' ? '+' : '-'}${formatter.format(created.amount)} for ${created.category}\n` +
                      `💰 Current Balance: ${formatter.format(balance)}`;
     }
 
-    // Twilio TwiML response
-    res.setHeader('Content-Type', 'text/xml');
-    res.send(`
-      <Response>
-        <Message>${replyMessage}</Message>
-      </Response>
-    `);
+    await sendTelegramMessage(chatId, replyMessage);
+
   } catch (err) {
     console.error('Webhook Error:', err);
-    res.status(500).send('Internal Server Error');
   }
 });
 

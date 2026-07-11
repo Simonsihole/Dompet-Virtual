@@ -3,7 +3,7 @@ import {
   ChartPieSlice,
   ListBullets,
   ChartBar,
-  WhatsappLogo,
+  TelegramLogo,
   Wallet,
   SquaresFour,
   Receipt,
@@ -56,7 +56,7 @@ export default function Sidebar() {
           <Wallet size={20} weight="duotone" /> Budget
         </NavLink>
         <NavLink to="/chat" className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-[12px] text-[14px] font-medium transition-all ${isActive ? 'active-nav' : 'text-[var(--text-muted)] hover:bg-[var(--bg-card)]'}`}>
-          <WhatsappLogo size={20} weight="duotone" /> WhatsApp
+          <TelegramLogo size={20} weight="duotone" /> Telegram
         </NavLink>
         <NavLink to="/settings" className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-[12px] text-[14px] font-medium transition-all ${isActive ? 'active-nav' : 'text-[var(--text-muted)] hover:bg-[var(--bg-card)]'}`}>
           <Gear size={20} weight="duotone" /> Settings

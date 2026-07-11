@@ -78,7 +78,7 @@ export default function TransactionList({ limit }) {
 
       {transactions.length === 0 ? (
         <p className="text-[13px] py-6 text-center" style={{ color: 'var(--text-muted)' }}>
-          No transactions yet. Send a WhatsApp message to log one!
+          No transactions yet. Send a Telegram message to log one!
         </p>
       ) : (
         Object.entries(grouped).map(([date, items]) => (
