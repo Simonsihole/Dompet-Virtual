@@ -18,12 +18,9 @@ async function sendTelegramMessage(chatId, text) {
 }
 
 router.post('/', async (req, res) => {
-  // Always respond with 200 to acknowledge receipt to Telegram immediately
-  res.sendStatus(200);
-
   try {
     const { message } = req.body;
-    if (!message || !message.text) return;
+    if (!message || !message.text) return res.sendStatus(200);
 
     const chatId = message.chat.id.toString();
     const text = message.text.trim();
@@ -37,14 +34,14 @@ router.post('/', async (req, res) => {
       } else {
         await sendTelegramMessage(chatId, `❌ This chat is not linked to any Dompet account.\n\nPlease log in to Dompet, go to Settings, and link your account using this ID: \`${chatId}\``);
       }
-      return;
+      return res.sendStatus(200);
     }
     
     const userId = profileRows[0].user_id;
 
     if (text === '/start') {
        await sendTelegramMessage(chatId, '✅ Your account is fully linked! You can now send me expenses like "Makan 50k" or "Gaji 5jt"!');
-       return;
+       return res.sendStatus(200);
     }
 
     const txData = await parseMessage(text);
@@ -144,8 +141,10 @@ router.post('/', async (req, res) => {
 
     await sendTelegramMessage(chatId, replyMessage);
 
+    res.sendStatus(200);
   } catch (err) {
     console.error('Webhook Error:', err);
+    res.sendStatus(200);
   }
 });
 
