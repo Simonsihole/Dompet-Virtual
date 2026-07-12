@@ -4,32 +4,23 @@ import { formatRupiah } from '../data/mockData';
 import TransactionList from '../components/TransactionList';
 import CategoryChart from '../components/CategoryChart';
 import MonthlyChart from '../components/MonthlyChart';
-import { TrendDown, PiggyBank } from '@phosphor-icons/react';
 
-function StatCard({ label, amount, icon: Icon, color, sub }) {
+function StatBlock({ label, value, color }) {
   return (
-    <div className="rounded-lg p-4 flex flex-col gap-2"
-      style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)' }}>
-      <div className="flex items-center justify-between">
-        <span className="label">{label}</span>
-        <div className="w-6 h-6 rounded-md flex items-center justify-center"
-          style={{ background: `${color}18` }}>
-          <Icon size={13} weight="bold" style={{ color }} />
-        </div>
+    <div className="flex flex-col gap-1.5">
+      <div className="flex items-center gap-2">
+        <span className="w-1.5 h-1.5 rounded-full" style={{ background: color, boxShadow: `0 0 8px ${color}80` }} />
+        <span className="text-[11px] font-medium tracking-wide uppercase" style={{ color: 'var(--text-muted)' }}>{label}</span>
       </div>
-      <p className="text-[22px] font-bold font-mono leading-none"
-        style={{ color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
-        {formatRupiah(amount ?? 0)}
-      </p>
-      {sub && <p className="text-[11px]" style={{ color: 'var(--text-muted)' }}>{sub}</p>}
+      <span className="text-[18px] md:text-[22px] font-mono tracking-tight" style={{ color: 'var(--text-primary)' }}>{value}</span>
     </div>
   );
 }
 
-function Skeleton({ h = '168px' }) {
+function Skeleton() {
   return (
-    <div className="rounded-[18px] animate-pulse"
-      style={{ height: h, background: 'var(--bg-elevated)', border: '1px solid var(--border)' }} />
+    <div className="w-full rounded-2xl animate-pulse"
+      style={{ height: '300px', background: 'var(--bg-elevated)', border: '1px solid var(--border)' }} />
   );
 }
 
@@ -43,64 +34,60 @@ export default function Dashboard() {
   const savingsRate = balance?.savingsRate ?? 0;
 
   return (
-    <div className="max-w-[1100px] space-y-4">
+    <div className="max-w-[1200px] mx-auto space-y-6 pb-20">
+      
+      {/* Editorial Hero Block */}
+      {loading ? <Skeleton /> : (
+        <div className="relative rounded-3xl p-8 md:p-12 overflow-hidden flex flex-col"
+          style={{
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border)',
+            boxShadow: '0 24px 40px -12px rgba(0,0,0,0.5)'
+          }}>
+          
+          {/* Subtle Ambient Glows instead of generic linear gradients */}
+          <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full blur-[120px] pointer-events-none opacity-20"
+            style={{ background: 'radial-gradient(circle, var(--accent) 0%, transparent 70%)', transform: 'translate(30%, -30%)' }} />
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full blur-[100px] pointer-events-none opacity-10"
+            style={{ background: 'radial-gradient(circle, #3B82F6 0%, transparent 70%)', transform: 'translate(-30%, 30%)' }} />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Balance hero */}
-        {loading ? <Skeleton h="168px" /> : (
-          <div className="md:col-span-2 rounded-[18px] p-6 relative overflow-hidden flex flex-col justify-between"
-            style={{
-              background: 'linear-gradient(135deg, #0f2e1a 0%, #0a1f12 60%, #0a0a0b 100%)',
-              border: '1px solid rgba(34,197,94,0.2)', minHeight: '168px',
-            }}>
-            <div className="absolute top-0 right-0 w-64 h-64 pointer-events-none"
-              style={{ background: 'radial-gradient(circle, rgba(34,197,94,0.08) 0%, transparent 70%)', transform: 'translate(20%, -20%)' }} />
-            <div className="relative z-10">
-              <p className="label" style={{ color: 'rgba(34,197,94,0.7)' }}>Current Balance</p>
-              <p className="text-[32px] md:text-[40px] font-bold font-mono leading-none mt-2"
-                style={{ color: 'var(--text-primary)', letterSpacing: '-0.04em' }}>
-                {formatRupiah(current)}
-              </p>
-            </div>
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-3 relative z-10 mt-6 md:mt-0">
-              {[
-                { label: 'Income',   value: `+${formatRupiah(income)}`,   color: 'rgba(34,197,94,0.6)',   text: 'var(--accent)' },
-                { label: 'Expenses', value: `-${formatRupiah(expenses)}`,  color: 'rgba(248,113,113,0.6)', text: '#f87171' },
-                { label: 'Saved',    value: `${savingsRate}%`,             color: 'rgba(255,255,255,0.4)', text: 'var(--text-primary)' },
-              ].map(({ label, value, color, text }, i) => (
-                <div key={label} className="flex items-center gap-5">
-                  {i > 0 && <div className="hidden md:block" style={{ width: '1px', height: '28px', background: 'rgba(255,255,255,0.07)' }} />}
-                  <div>
-                    <p className="text-[10px] font-medium mb-0.5" style={{ color }}>{label}</p>
-                    <p className="text-[14px] font-mono font-semibold" style={{ color: text }}>{value}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div className="relative z-10 flex-1">
+            <p className="text-[12px] font-bold tracking-[0.2em] uppercase mb-6 flex items-center gap-3" style={{ color: 'var(--accent)' }}>
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              Live Net Worth
+            </p>
+            
+            <h1 className="text-[52px] md:text-[88px] leading-[0.9] font-mono tracking-tighter"
+              style={{ color: 'var(--text-primary)' }}>
+              {formatRupiah(current)}
+            </h1>
           </div>
-        )}
 
-        {/* Right stat cards */}
-        <div className="flex flex-col gap-4">
-          {loading ? (
-            <><Skeleton h="75px" /><Skeleton h="75px" /></>
-          ) : (
-            <>
-              <StatCard label="Total Expenses" amount={expenses} icon={TrendDown}  color="#f87171"           sub="This month" />
-              <StatCard label="Net Saved"       amount={savings}  icon={PiggyBank}  color="var(--accent)"    sub={`${savingsRate}% savings rate`} />
-            </>
-          )}
+          <div className="relative z-10 mt-16 md:mt-24 pt-8 grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4"
+            style={{ borderTop: '1px solid var(--border-strong)' }}>
+            <StatBlock label="Income"   value={`+${formatRupiah(income)}`}   color="#10B981" />
+            <StatBlock label="Expenses" value={`-${formatRupiah(expenses)}`}  color="#EF4444" />
+            <StatBlock label="Saved"    value={formatRupiah(savings)}        color="#3B82F6" />
+            <StatBlock label="Rate"     value={`${savingsRate}%`}            color="var(--amber)" />
+          </div>
+        </div>
+      )}
+
+      {/* Charts Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <div className="lg:col-span-3 rounded-3xl overflow-hidden shadow-lg"><MonthlyChart /></div>
+        <div className="lg:col-span-2 rounded-3xl overflow-hidden shadow-lg"><CategoryChart /></div>
+      </div>
+
+      {/* Transactions */}
+      <div className="rounded-3xl overflow-hidden shadow-lg" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+        <div className="p-6 md:p-8 border-b" style={{ borderColor: 'var(--border)' }}>
+          <h2 className="text-[18px] font-semibold" style={{ color: 'var(--text-primary)' }}>Recent Activity</h2>
+        </div>
+        <div className="p-2">
+          <TransactionList limit={5} />
         </div>
       </div>
-
-      {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-        <div className="lg:col-span-3"><MonthlyChart /></div>
-        <div className="lg:col-span-2"><CategoryChart /></div>
-      </div>
-
-      {/* Recent transactions */}
-      <TransactionList limit={5} />
     </div>
   );
 }
