@@ -7,10 +7,18 @@ const CustomTooltip = ({ active, payload }) => {
   if (active && payload?.length) {
     const d = payload[0];
     return (
-      <div className="px-3 py-2 text-[13px]"
-        style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-strong)', borderRadius: '8px', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}>
-        <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>{d.name}</p>
-        <p className="font-mono" style={{ color: 'var(--text-muted)' }}>{formatRupiah(d.value)}</p>
+      <div className="px-3 py-2.5 text-[13px] backdrop-blur-md"
+        style={{ 
+          background: 'rgba(10, 10, 10, 0.7)', 
+          border: '1px solid rgba(255,255,255,0.08)', 
+          borderRadius: '10px', 
+          boxShadow: '0 12px 40px rgba(0,0,0,0.5)' 
+        }}>
+        <div className="flex items-center gap-2 mb-1">
+          <span className="w-2 h-2 rounded-full" style={{ background: d.payload.color, boxShadow: `0 0 8px ${d.payload.color}` }} />
+          <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>{d.name}</p>
+        </div>
+        <p className="font-mono text-zinc-400 pl-4">{formatRupiah(d.value)}</p>
       </div>
     );
   }
@@ -31,27 +39,56 @@ export default function CategoryChart() {
 
   return (
     <div className="card h-full flex flex-col">
-      <p className="label mb-4">By Category</p>
-      <div className="flex gap-6 flex-1">
-        <div style={{ width: 140, flexShrink: 0 }}>
-          <ResponsiveContainer width="100%" height={140}>
+      <div className="mb-4">
+        <p className="label">Spending by Category</p>
+        <p className="text-[11px] text-zinc-500 mt-0.5 tracking-wide">Breakdown of total expenses</p>
+      </div>
+
+      <div className="flex gap-8 flex-1 items-center">
+        <div className="relative" style={{ width: 150, height: 150, flexShrink: 0 }}>
+          {/* Total Spend Overlay in the center of Donut */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+            <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-semibold mb-0.5">Total</span>
+            <span className="text-[13px] font-mono font-bold text-zinc-100">{formatRupiah(total)}</span>
+          </div>
+
+          <ResponsiveContainer width="100%" height="100%">
             <PieChart>
-              <Pie data={categories} cx="50%" cy="50%" innerRadius={42} outerRadius={62} paddingAngle={3} dataKey="value" strokeWidth={0}>
+              <Pie 
+                data={categories} 
+                cx="50%" cy="50%" 
+                innerRadius={60} 
+                outerRadius={70} 
+                paddingAngle={6} 
+                cornerRadius={10} 
+                dataKey="value" 
+                strokeWidth={0}
+                animationDuration={1500}
+                animationEasing="ease-out"
+              >
                 {categories.map((entry) => (
-                  <Cell key={entry.name} fill={entry.color} opacity={0.9} />
+                  <Cell 
+                    key={entry.name} 
+                    fill={entry.color} 
+                    opacity={0.85}
+                    style={{ filter: `drop-shadow(0 0 4px ${entry.color}40)` }}
+                  />
                 ))}
               </Pie>
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
             </PieChart>
           </ResponsiveContainer>
         </div>
-        <div className="flex flex-col justify-center gap-2.5 flex-1 min-w-0">
+
+        <div className="flex flex-col justify-center gap-3.5 flex-1 min-w-0">
           {categories.map((cat) => {
             const pct = total > 0 ? Math.round((cat.value / total) * 100) : 0;
             return (
-              <div key={cat.name} className="flex items-center gap-2 min-w-0">
-                <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: cat.color }} />
-                <span className="text-[12px] flex-1 truncate" style={{ color: 'var(--text-muted)' }}>{cat.name}</span>
+              <div key={cat.name} className="flex items-center gap-3 min-w-0 group cursor-default">
+                <span className="w-1.5 h-1.5 rounded-full flex-shrink-0 transition-all duration-300 group-hover:scale-150" 
+                      style={{ background: cat.color, boxShadow: `0 0 8px ${cat.color}60` }} />
+                <span className="text-[13px] flex-1 truncate transition-colors duration-300 group-hover:text-zinc-200" 
+                      style={{ color: 'var(--text-muted)' }}>{cat.name}</span>
                 <span className="text-[12px] font-mono flex-shrink-0" style={{ color: 'var(--text-primary)' }}>{pct}%</span>
               </div>
             );
