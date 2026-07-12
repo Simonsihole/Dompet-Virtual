@@ -110,14 +110,14 @@ export default function Settings() {
         <p className="text-sm text-zinc-500">Manage your integrations and account.</p>
       </div>
 
-      <div className="bg-[#0A0A0A] border border-white/[0.04] rounded-2xl p-6 shadow-sm max-w-xl">
+      <div className="card shadow-sm max-w-xl" style={{ border: '1px solid var(--border)' }}>
         <div className="flex items-center gap-4 mb-8">
           <div className="p-3 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-xl">
             <TelegramLogo size={24} weight="duotone" />
           </div>
           <div>
-            <h2 className="text-[15px] font-medium text-zinc-100">Telegram Integration</h2>
-            <p className="text-[13px] text-zinc-500">Log expenses securely from Telegram.</p>
+            <h2 className="text-[15px] font-medium" style={{ color: 'var(--text-primary)' }}>Telegram Integration</h2>
+            <p className="text-[13px]" style={{ color: 'var(--text-muted)' }}>Log expenses securely from Telegram.</p>
           </div>
         </div>
 
@@ -136,18 +136,18 @@ export default function Settings() {
         )}
 
         {currentPhone && !isEditing ? (
-          <div className="bg-black border border-white/[0.04] p-5 rounded-xl flex items-center justify-between">
+          <div className="card-elevated p-5 flex items-center justify-between">
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
                 <p className="text-[12px] font-medium text-blue-400 uppercase tracking-wider">Active</p>
               </div>
-              <p className="text-zinc-200 font-mono text-lg">{currentPhone}</p>
+              <p className="font-mono text-lg" style={{ color: 'var(--text-primary)' }}>{currentPhone}</p>
             </div>
             <div className="flex items-center gap-2">
               <button 
                 onClick={() => setIsEditing(true)} 
-                className="p-2.5 bg-white/[0.03] border border-white/[0.04] text-zinc-400 rounded-lg hover:text-zinc-100 hover:bg-white/[0.06] transition-colors"
+                className="btn-ghost"
                 title="Edit ID"
               >
                 <PencilSimple size={16} weight="bold" />
@@ -164,7 +164,7 @@ export default function Settings() {
         ) : (
           <form onSubmit={handleSave} className="space-y-5">
             <div>
-              <label className="block text-[13px] font-medium text-zinc-400 mb-2">
+              <label className="block text-[13px] font-medium mb-2" style={{ color: 'var(--text-muted)' }}>
                 Telegram Chat ID
               </label>
               <div className="relative">
@@ -173,10 +173,11 @@ export default function Settings() {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="123456789"
-                  className="w-full px-4 py-3 bg-black border border-white/[0.08] rounded-xl focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 outline-none transition-all placeholder:text-zinc-700 text-zinc-100 font-mono"
+                  className="w-full px-4 py-3 rounded-xl focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 outline-none transition-all font-mono"
+                  style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
                 />
               </div>
-              <p className="mt-2 text-[12px] text-zinc-500">
+              <p className="mt-2 text-[12px]" style={{ color: 'var(--text-subtle)' }}>
                 Send <b>/start</b> to <a href="https://t.me/DompetDashBot" target="_blank" rel="noreferrer" className="text-blue-400 hover:underline">@DompetDashBot</a> to get your Chat ID.
               </p>
             </div>
@@ -185,7 +186,7 @@ export default function Settings() {
               <button
                 type="submit"
                 disabled={loading || !phone}
-                className="bg-zinc-100 hover:bg-white text-black font-medium py-2.5 px-6 rounded-lg text-[14px] transition-all disabled:opacity-50 flex items-center justify-center gap-2 flex-1 sm:flex-none"
+                className="btn-accent flex-1 sm:flex-none justify-center py-2.5"
               >
                 {loading ? <Spinner className="animate-spin" /> : 'Save Integration'}
               </button>
@@ -198,7 +199,7 @@ export default function Settings() {
                     setPhone(currentPhone);
                     setError(null);
                   }}
-                  className="bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08] text-zinc-300 font-medium py-2.5 px-6 rounded-lg text-[14px] transition-all flex-1 sm:flex-none"
+                  className="btn-ghost flex-1 sm:flex-none justify-center py-2.5"
                 >
                   Cancel
                 </button>
@@ -208,8 +209,8 @@ export default function Settings() {
         )}
       </div>
 
-      <div className="bg-[#0A0A0A] border border-white/[0.04] rounded-2xl p-6 shadow-sm max-w-xl">
-        <h2 className="text-[15px] font-medium text-zinc-100 mb-4">Account Actions</h2>
+      <div className="card shadow-sm max-w-xl" style={{ border: '1px solid var(--border)' }}>
+        <h2 className="text-[15px] font-medium mb-4" style={{ color: 'var(--text-primary)' }}>Account Actions</h2>
         <button
           onClick={signOut}
           className="w-full flex items-center justify-center gap-2 py-3 bg-red-500/5 border border-red-500/10 text-red-400 rounded-xl hover:bg-red-500/10 hover:border-red-500/20 transition-all font-medium text-[14px]"

@@ -12,7 +12,7 @@ export default function Landing() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-zinc-100 flex flex-col font-sans selection:bg-zinc-800 selection:text-white">
+    <div className="min-h-screen text-zinc-100 flex flex-col font-sans selection:bg-emerald-900 selection:text-emerald-100" style={{ background: 'var(--bg)', color: 'var(--text-primary)' }}>
       {/* Navbar */}
       <header className="px-6 py-5 flex items-center justify-between border-b border-white/[0.04] backdrop-blur-xl sticky top-0 z-50">
         <div className="flex items-center gap-2.5">
@@ -71,7 +71,7 @@ export default function Landing() {
         </section>
 
         {/* Bento Grid Features */}
-        <section className="px-6 py-24 bg-[#050505] border-t border-white/[0.04] relative">
+        <section className="px-6 py-24 border-t border-white/[0.04] relative" style={{ background: 'var(--bg)' }}>
           <div className="max-w-6xl mx-auto">
             <div className="mb-16">
               <h2 className="text-2xl font-medium tracking-tight mb-2">Engineered for speed.</h2>
