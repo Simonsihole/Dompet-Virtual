@@ -4,24 +4,42 @@
 
 @layer base {
   :root {
-    --accent:        #10B981;
-    --accent-dim:    #059669;
-    --accent-muted:  rgba(16, 185, 129, 0.15);
-    --bg:            #08100A;
-    --bg-card:       #0E1A11;
-    --bg-elevated:   #132216;
-    --border:        rgba(167, 243, 208, 0.08);
-    --border-strong: rgba(167, 243, 208, 0.15);
-    --text-primary:  #E2F1E5;
-    --text-muted:    #88A992;
-    --text-subtle:   #4F735B;
+    --bg-canvas:     #F4F4F5;
+    --bg:            #F4F4F5;
+    --bg-card:       #FFFFFF;
+    --bg-elevated:   #FAFAFA;
+    --border:        #E4E4E7;
+    --border-strong: #D4D4D8;
+    --text-primary:  #09090B;
+    --text-muted:    #71717A;
+    --text-subtle:   #A1A1AA;
+    --accent:        #09090B;
+    --accent-dim:    #27272A;
+    --accent-muted:  rgba(9, 9, 11, 0.05);
+    
     --red:           #EF4444;
     --blue:          #3B82F6;
     --amber:         #F59E0B;
     --purple:        #8B5CF6;
+    
     --radius-sm:     6px;
     --radius:        12px;
     --radius-lg:     18px;
+  }
+
+  .dark {
+    --bg-canvas:     #000000;
+    --bg:            #000000;
+    --bg-card:       #0A0A0B;
+    --bg-elevated:   #121214;
+    --border:        #27272A;
+    --border-strong: #3F3F46;
+    --text-primary:  #FAFAFA;
+    --text-muted:    #A1A1AA;
+    --text-subtle:   #71717A;
+    --accent:        #FAFAFA;
+    --accent-dim:    #E4E4E7;
+    --accent-muted:  rgba(250, 250, 250, 0.08);
   }
 
   * { box-sizing: border-box; }

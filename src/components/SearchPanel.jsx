@@ -5,13 +5,13 @@ import { api } from '../lib/api';
 import { formatRupiah } from '../data/mockData';
 
 const categoryIcons = {
-  Food:          { Icon: ForkKnife,      color: '#22c55e', bg: 'rgba(34,197,94,0.1)' },
-  Transport:     { Icon: Car,            color: '#60a5fa', bg: 'rgba(96,165,250,0.1)' },
-  Shopping:      { Icon: ShoppingBag,    color: '#fbbf24', bg: 'rgba(251,191,36,0.1)' },
-  Bills:         { Icon: Receipt,        color: '#f87171', bg: 'rgba(248,113,113,0.1)' },
-  Entertainment: { Icon: FilmSlate,      color: '#a78bfa', bg: 'rgba(167,139,250,0.1)' },
-  Salary:        { Icon: CurrencyDollar, color: '#34d399', bg: 'rgba(52,211,153,0.1)' },
-  Other:         { Icon: Package,        color: '#9ca3af', bg: 'rgba(156,163,175,0.1)' },
+  Food:          { Icon: ForkKnife,      color: '#E17A5F', bg: 'rgba(225,122,95,0.12)' },
+  Transport:     { Icon: Car,            color: '#5C90A6', bg: 'rgba(92,144,166,0.12)' },
+  Shopping:      { Icon: ShoppingBag,    color: '#D4A373', bg: 'rgba(212,163,115,0.12)' },
+  Bills:         { Icon: Receipt,        color: '#8E7B9D', bg: 'rgba(142,123,157,0.12)' },
+  Entertainment: { Icon: FilmSlate,      color: '#E098B1', bg: 'rgba(224,152,177,0.12)' },
+  Salary:        { Icon: CurrencyDollar, color: '#10B981', bg: 'rgba(16,185,129,0.15)' },
+  Other:         { Icon: Package,        color: '#94A3B8', bg: 'rgba(148,163,184,0.12)' },
 };
 
 export default function SearchPanel({ open, onClose }) {
@@ -116,7 +116,7 @@ export default function SearchPanel({ open, onClose }) {
                   key={tx.id}
                   className="flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors"
                   style={{ borderBottom: '1px solid var(--border)' }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}
+                  onMouseEnter={(e) => e.currentTarget.style.background = 'var(--accent-muted)'}
                   onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                   onClick={() => { navigate('/transactions'); onClose(); }}
                 >

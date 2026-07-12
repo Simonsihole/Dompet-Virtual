@@ -165,9 +165,8 @@ export default function Chat() {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }}
               placeholder="e.g. beli makan 50rb..."
-              className="w-full resize-none text-[14px] outline-none px-4 py-3.5 pr-12 rounded-2xl transition-all focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20"
+              className="w-full resize-none text-[14px] outline-none px-4 py-3.5 pr-12 rounded-2xl transition-all focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 bg-transparent"
               style={{
-                background: 'var(--bg-elevated)',
                 border: '1px solid var(--border)',
                 color: 'var(--text-primary)',
               }}

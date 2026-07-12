@@ -151,7 +151,7 @@ export default function Settings() {
                   <p className="font-mono text-[16px]" style={{ color: 'var(--text-primary)' }}>{currentPhone}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button onClick={() => setIsEditing(true)} className="p-2.5 rounded-lg border border-transparent transition-all hover:bg-white/5 hover:border-white/10" title="Edit">
+                  <button onClick={() => setIsEditing(true)} className="p-2.5 rounded-lg border border-transparent transition-all hover:bg-[var(--accent-muted)] hover:border-[var(--border-strong)]" title="Edit">
                     <PencilSimple size={16} style={{ color: 'var(--text-muted)' }} />
                   </button>
                   <button onClick={handleRemove} className="p-2.5 rounded-lg border border-transparent transition-all hover:bg-red-500/10 hover:border-red-500/20 text-red-400" title="Disconnect">
@@ -183,7 +183,7 @@ export default function Settings() {
                     {loading ? <Spinner className="animate-spin" /> : 'Connect Account'}
                   </button>
                   {currentPhone && isEditing && (
-                    <button type="button" onClick={() => { setIsEditing(false); setPhone(currentPhone); setError(null); }} className="px-5 py-2.5 rounded-lg font-medium text-[13px] transition-all hover:bg-white/5" style={{ color: 'var(--text-primary)' }}>
+                    <button type="button" onClick={() => { setIsEditing(false); setPhone(currentPhone); setError(null); }} className="px-5 py-2.5 rounded-lg font-medium text-[13px] transition-all hover:bg-[var(--accent-muted)]" style={{ color: 'var(--text-primary)' }}>
                       Cancel
                     </button>
                   )}
@@ -201,7 +201,7 @@ export default function Settings() {
                   <WhatsappLogo size={20} className="text-green-500" />
                   <span className="text-[14px] font-medium" style={{ color: 'var(--text-primary)' }}>WhatsApp (Legacy)</span>
                 </div>
-                <span className="text-[11px] font-medium tracking-wide uppercase px-2 py-1 rounded-md" style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-muted)' }}>Deprecated</span>
+                <span className="text-[11px] font-medium tracking-wide uppercase px-2 py-1 rounded-md" style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', color: 'var(--text-muted)' }}>Deprecated</span>
               </div>
             </div>
           </div>

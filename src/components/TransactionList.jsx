@@ -39,14 +39,14 @@ function TxRow({ tx }) {
   const isIncome = tx.type === 'income';
 
   return (
-    <div className="flex items-center gap-4 px-3 py-3 transition-colors duration-200 hover:bg-white/[0.03] rounded-xl group border border-transparent hover:border-white/5">
+    <div className="flex items-center gap-4 px-3 py-3 transition-colors duration-200 hover:bg-[var(--accent-muted)] rounded-xl group border border-transparent hover:border-[var(--border-strong)]">
       <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover:scale-105" 
            style={{ background: cfg.bg, border: `1px solid ${cfg.color}30` }}>
         <Icon size={18} weight="duotone" style={{ color: cfg.color }} />
       </div>
       
       <div className="flex-1 min-w-0 flex flex-col justify-center">
-        <p className="text-[14px] font-medium truncate transition-colors duration-200 group-hover:text-white" 
+        <p className="text-[14px] font-medium truncate transition-colors duration-200" 
            style={{ color: 'var(--text-primary)' }}>
           {tx.description}
         </p>
@@ -104,7 +104,7 @@ export default function TransactionList({ limit, hideHeader = false }) {
                 <p className="text-[11px] font-semibold uppercase tracking-widest" style={{ color: 'var(--text-subtle)' }}>
                   {relativeDate(date)}
                 </p>
-                <div className="h-[1px] flex-1 bg-white/[0.03]" />
+                <div className="h-[1px] flex-1" style={{ background: 'var(--border-strong)' }} />
               </div>
               <div className="space-y-0.5">
                 {items.map((tx) => <TxRow key={tx.id} tx={tx} />)}

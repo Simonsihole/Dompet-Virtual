@@ -18,7 +18,7 @@ function StatCard({ label, value, sub }) {
   return (
     <div className="rounded-3xl p-6 shadow-sm relative overflow-hidden group"
       style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-      <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-[40px] pointer-events-none -translate-y-1/2 translate-x-1/4 transition-opacity duration-500 group-hover:opacity-100 opacity-50" />
+      <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--text-primary)] rounded-full blur-[40px] pointer-events-none -translate-y-1/2 translate-x-1/4 transition-opacity duration-500 opacity-5 group-hover:opacity-10" />
       <p className="text-[12px] font-bold tracking-[0.1em] uppercase mb-2 text-zinc-500">{label}</p>
       <p className="text-[28px] font-bold font-mono tracking-tighter"
         style={{ color: 'var(--text-primary)' }}>
@@ -74,7 +74,7 @@ export default function Analytics() {
         </p>
         
         {lcats ? (
-          <div className="animate-pulse h-32 bg-white/5 rounded-xl" />
+          <div className="animate-pulse h-32 bg-[var(--accent-muted)] rounded-xl" />
         ) : (
           <div className="space-y-6">
             {sorted.map((cat) => {
@@ -86,7 +86,7 @@ export default function Analytics() {
                   <div className="flex items-end justify-between mb-2">
                     <div className="flex items-center gap-3">
                       <span className="w-2 h-2 rounded-full" style={{ background: barColor, boxShadow: `0 0 8px ${barColor}80` }} />
-                      <span className="text-[14px] font-medium transition-colors group-hover:text-white" style={{ color: 'var(--text-primary)' }}>
+                      <span className="text-[14px] font-medium transition-colors" style={{ color: 'var(--text-primary)' }}>
                         {cat.name}
                       </span>
                     </div>

@@ -20,8 +20,8 @@ function NavItem({ to, icon: Icon, label, end }) {
       className={({ isActive }) => 
         `flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-[14px] font-medium transition-all duration-150 ${
           isActive 
-            ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' 
-            : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200 border border-transparent'
+            ? 'bg-[var(--accent-muted)] text-[var(--accent)] border border-[var(--border-strong)]' 
+            : 'text-[var(--text-muted)] hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)] border border-transparent'
         }`
       }
     >
@@ -75,7 +75,7 @@ export default function Sidebar() {
       </nav>
 
       {/* User Actions */}
-      <div className="px-4 pb-6 mt-6 border-t border-white/5 pt-6">
+      <div className="px-4 pb-6 mt-6 border-t pt-6" style={{ borderColor: 'var(--border)' }}>
         <div
           className="rounded-xl p-4 flex flex-col gap-3"
           style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)' }}

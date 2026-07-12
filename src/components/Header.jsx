@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import { MagnifyingGlass } from '@phosphor-icons/react';
+import { MagnifyingGlass, Sun, Moon } from '@phosphor-icons/react';
 import SearchPanel from './SearchPanel';
 import NotificationsDropdown, { NotificationBell } from './NotificationsDropdown';
 import { useApi } from '../lib/useApi';
 import { api } from '../lib/api';
+import { useTheme } from '../context/ThemeContext';
 
 const pageTitles = {
   '/':             { title: 'Overview',     subtitle: 'July 2026' },
@@ -18,6 +19,8 @@ const pageTitles = {
 export default function Header() {
   const { pathname } = useLocation();
   const page = pageTitles[pathname] ?? { title: 'Dashboard', subtitle: '' };
+  
+  const { isDark, toggleTheme } = useTheme();
 
   const [searchOpen, setSearchOpen]   = useState(false);
   const [notifOpen,  setNotifOpen]    = useState(false);
@@ -29,23 +32,35 @@ export default function Header() {
     <>
       <header
         className="h-[68px] px-8 flex items-center justify-between sticky top-0 z-40 backdrop-blur-md"
-        style={{ background: 'rgba(8, 16, 10, 0.8)', borderBottom: '1px solid var(--border)' }}
+        style={{ background: 'var(--bg-canvas)', opacity: 0.98, borderBottom: '1px solid var(--border)' }}
       >
         <div className="flex items-center gap-3">
           <h1 className="text-[14px] font-semibold tracking-wide"
             style={{ color: 'var(--text-primary)' }}>
             {page.title}
           </h1>
-          <div className="w-[1px] h-3 bg-zinc-800" />
+          <div className="w-[1px] h-3" style={{ background: 'var(--border-strong)' }} />
           <span className="text-[12px] font-medium" style={{ color: 'var(--text-muted)' }}>
             {page.subtitle}
           </span>
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Theme toggle */}
+          <button
+            className="p-2 rounded-xl border border-transparent transition-all duration-200 hover:bg-[var(--bg-elevated)]"
+            onClick={toggleTheme}
+          >
+            {isDark ? (
+              <Sun size={18} style={{ color: 'var(--text-muted)' }} />
+            ) : (
+              <Moon size={18} style={{ color: 'var(--text-muted)' }} />
+            )}
+          </button>
+          
           {/* Search button */}
           <button
-            className="p-2 rounded-xl border border-transparent transition-all duration-200 hover:bg-zinc-800/50 hover:border-zinc-700/50"
+            className="p-2 rounded-xl border border-transparent transition-all duration-200 hover:bg-[var(--bg-elevated)]"
             onClick={() => setSearchOpen(true)}
           >
             <MagnifyingGlass size={18} style={{ color: 'var(--text-muted)' }} />
@@ -63,7 +78,7 @@ export default function Header() {
             />
           </div>
 
-          <div className="w-[1px] h-4 mx-2 bg-zinc-800" />
+          <div className="w-[1px] h-4 mx-2" style={{ background: 'var(--border-strong)' }} />
 
           {/* Avatar */}
           <Link 

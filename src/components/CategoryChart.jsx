@@ -19,10 +19,10 @@ const CustomTooltip = ({ active, payload }) => {
     return (
       <div className="px-3 py-2.5 text-[13px] backdrop-blur-md"
         style={{ 
-          background: 'rgba(10, 10, 10, 0.7)', 
-          border: '1px solid rgba(255,255,255,0.08)', 
+          background: 'var(--bg-elevated)', 
+          border: '1px solid var(--border)', 
           borderRadius: '10px', 
-          boxShadow: '0 12px 40px rgba(0,0,0,0.5)' 
+          boxShadow: '0 12px 40px rgba(0,0,0,0.2)' 
         }}>
         <div className="flex items-center gap-2 mb-1">
           <span className="w-2 h-2 rounded-full" style={{ background: d.payload.color, boxShadow: `0 0 8px ${d.payload.color}` }} />
@@ -89,7 +89,7 @@ export default function CategoryChart() {
                   );
                 })}
               </Pie>
-              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
+              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'var(--accent-muted)' }} />
             </PieChart>
           </ResponsiveContainer>
         </div>
