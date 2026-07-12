@@ -69,16 +69,16 @@ export default function MonthlyChart() {
                 <stop offset="100%" stopColor="#f87171" stopOpacity={0.1} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.02)" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
             <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} dy={10} />
             <YAxis tickFormatter={fmtY} tick={{ fontSize: 10, fill: 'var(--text-muted)', fontFamily: 'monospace' }} axisLine={false} tickLine={false} dx={-10} width={36} />
             <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.02)' }} />
             
-            <Bar dataKey="income" name="Income" fill="url(#colorIncome)" barSize={10} radius={[4, 4, 0, 0]} animationDuration={1200}>
+            <Bar dataKey="income" name="Income" fill="url(#colorIncome)" barSize={10} radius={[4, 4, 0, 0]} animationDuration={1200} minPointSize={4}>
               {chartData.map((_, i) => <Cell key={i} opacity={i === LAST ? 1 : 0.6} />)}
             </Bar>
             
-            <Bar dataKey="expenses" name="Expenses" fill="url(#colorExpenses)" barSize={10} radius={[4, 4, 0, 0]} animationDuration={1200}>
+            <Bar dataKey="expenses" name="Expenses" fill="url(#colorExpenses)" barSize={10} radius={[4, 4, 0, 0]} animationDuration={1200} minPointSize={4}>
               {chartData.map((_, i) => <Cell key={i} opacity={i === LAST ? 1 : 0.6} />)}
             </Bar>
           </BarChart>

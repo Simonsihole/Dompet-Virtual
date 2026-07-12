@@ -14,8 +14,8 @@ export default {
         'text-subtle': 'var(--text-subtle)',
       },
       fontFamily: {
-        sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'system-ui', 'sans-serif'],
-        mono: ['ui-monospace', 'SFMono-Regular', 'Consolas', 'monospace'],
+        sans: ['Outfit', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace'],
       },
       borderRadius: {
         sm: 'var(--radius-sm)',

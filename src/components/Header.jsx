@@ -1,22 +1,23 @@
 import { useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import { MagnifyingGlass, User } from '@phosphor-icons/react';
+import { MagnifyingGlass } from '@phosphor-icons/react';
 import SearchPanel from './SearchPanel';
 import NotificationsDropdown, { NotificationBell } from './NotificationsDropdown';
 import { useApi } from '../lib/useApi';
 import { api } from '../lib/api';
 
 const pageTitles = {
-  '/':             { title: 'Dashboard',    subtitle: 'July 2026' },
+  '/':             { title: 'Overview',     subtitle: 'July 2026' },
   '/transactions': { title: 'Transactions', subtitle: 'All activity' },
   '/analytics':    { title: 'Analytics',    subtitle: 'Spending insights' },
   '/budget':       { title: 'Budget',       subtitle: 'Monthly limits' },
-  '/chat':         { title: 'Telegram Bot', subtitle: 'Linked: @DompetDashBot' },
+  '/chat':         { title: 'Telegram',     subtitle: 'Linked: @DompetDashBot' },
+  '/settings':     { title: 'Settings',     subtitle: 'Preferences & Account' },
 };
 
 export default function Header() {
   const { pathname } = useLocation();
-  const page = pageTitles[pathname] ?? { title: 'Dompet', subtitle: '' };
+  const page = pageTitles[pathname] ?? { title: 'Dashboard', subtitle: '' };
 
   const [searchOpen, setSearchOpen]   = useState(false);
   const [notifOpen,  setNotifOpen]    = useState(false);
@@ -27,26 +28,27 @@ export default function Header() {
   return (
     <>
       <header
-        className="h-14 px-6 flex items-center justify-between"
-        style={{ background: 'var(--bg-card)', borderBottom: '1px solid var(--border)' }}
+        className="h-[68px] px-8 flex items-center justify-between sticky top-0 z-40 backdrop-blur-md"
+        style={{ background: 'rgba(8, 16, 10, 0.8)', borderBottom: '1px solid var(--border)' }}
       >
-        <div className="flex items-center gap-2">
-          <h1 className="text-[15px] font-semibold"
-            style={{ color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
+        <div className="flex items-center gap-3">
+          <h1 className="text-[14px] font-semibold tracking-wide"
+            style={{ color: 'var(--text-primary)' }}>
             {page.title}
           </h1>
-          <span className="text-[12px]" style={{ color: 'var(--text-muted)' }}>
-            / {page.subtitle}
+          <div className="w-[1px] h-3 bg-zinc-800" />
+          <span className="text-[12px] font-medium" style={{ color: 'var(--text-muted)' }}>
+            {page.subtitle}
           </span>
         </div>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           {/* Search button */}
           <button
-            className="btn-ghost px-2 py-2 border-0 bg-transparent"
+            className="p-2 rounded-xl border border-transparent transition-all duration-200 hover:bg-zinc-800/50 hover:border-zinc-700/50"
             onClick={() => setSearchOpen(true)}
           >
-            <MagnifyingGlass size={15} style={{ color: 'var(--text-muted)' }} />
+            <MagnifyingGlass size={18} style={{ color: 'var(--text-muted)' }} />
           </button>
 
           {/* Notifications bell */}
@@ -61,13 +63,19 @@ export default function Header() {
             />
           </div>
 
+          <div className="w-[1px] h-4 mx-2 bg-zinc-800" />
+
           {/* Avatar */}
           <Link 
             to="/settings"
-            className="w-7 h-7 rounded-full flex items-center justify-center ml-1 border hover:opacity-80 transition-opacity"
-            style={{ background: 'var(--bg-elevated)', borderColor: 'var(--border)', color: 'var(--text-primary)' }}
+            className="w-8 h-8 rounded-full flex items-center justify-center border transition-all duration-200 hover:scale-105"
+            style={{ 
+              background: 'linear-gradient(135deg, var(--accent) 0%, #3B82F6 100%)', 
+              borderColor: 'var(--border)', 
+              boxShadow: '0 0 12px rgba(16,185,129,0.3)' 
+            }}
           >
-            <User size={14} weight="duotone" />
+            <span className="text-[11px] font-bold text-white tracking-wider">JD</span>
           </Link>
         </div>
       </header>

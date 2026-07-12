@@ -80,14 +80,7 @@ export default function Dashboard() {
       </div>
 
       {/* Transactions */}
-      <div className="rounded-3xl overflow-hidden shadow-lg" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-        <div className="p-6 md:p-8 border-b" style={{ borderColor: 'var(--border)' }}>
-          <h2 className="text-[18px] font-semibold" style={{ color: 'var(--text-primary)' }}>Recent Activity</h2>
-        </div>
-        <div className="p-2">
-          <TransactionList limit={5} />
-        </div>
-      </div>
+      <TransactionList limit={5} />
     </div>
   );
 }
