@@ -57,13 +57,13 @@ export default function Dashboard() {
               Live Net Worth
             </p>
             
-            <h1 className="text-[52px] md:text-[88px] leading-[0.9] font-mono tracking-tighter"
+            <h1 className="text-[40px] md:text-[88px] leading-[1.1] md:leading-[0.9] font-mono tracking-tighter"
               style={{ color: 'var(--text-primary)' }}>
               {formatRupiah(current)}
             </h1>
           </div>
 
-          <div className="relative z-10 mt-16 md:mt-24 pt-8 grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4"
+          <div className="relative z-10 mt-12 md:mt-24 pt-6 md:pt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-4"
             style={{ borderTop: '1px solid var(--border-strong)' }}>
             <StatBlock label="Income"   value={`+${formatRupiah(income)}`}   color="#10B981" />
             <StatBlock label="Expenses" value={`-${formatRupiah(expenses)}`}  color="#EF4444" />

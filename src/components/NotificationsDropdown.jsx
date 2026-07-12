@@ -135,9 +135,9 @@ export function NotificationBell({ onClick, unread }) {
   return (
     <button
       onClick={onClick}
-      className="p-2 rounded-xl border border-transparent transition-all duration-200 hover:bg-[var(--bg-elevated)] relative"
+      className="w-10 h-10 md:w-11 md:h-11 flex items-center justify-center rounded-xl border border-transparent transition-all duration-200 hover:bg-[var(--bg-elevated)] relative"
     >
-      <Bell size={18} style={{ color: 'var(--text-muted)' }} />
+      <Bell size={20} style={{ color: 'var(--text-muted)' }} />
       {unread > 0 && (
         <span
           className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full border-2 border-[var(--bg-card)]"

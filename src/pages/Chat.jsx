@@ -66,10 +66,10 @@ export default function Chat() {
   };
 
   return (
-    <div className="flex justify-center pb-20 pt-6">
+    <div className="flex justify-center h-full w-full md:py-6">
       <div
-        className="w-full max-w-[500px] flex flex-col rounded-3xl overflow-hidden shadow-2xl relative"
-        style={{ height: 'calc(100vh - 180px)', minHeight: '600px', background: 'var(--bg-canvas)', border: '1px solid var(--border)' }}
+        className="w-full max-w-[500px] flex flex-col h-full md:rounded-3xl shadow-none md:shadow-2xl relative border-0 md:border md:border-[var(--border)]"
+        style={{ background: 'var(--bg-canvas)' }}
       >
         
         {/* Header bar */}
@@ -92,7 +92,7 @@ export default function Chat() {
             href="https://t.me/DompetDashBot" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="p-2.5 rounded-xl border border-transparent transition-all hover:bg-white/5"
+            className="p-2.5 rounded-xl border border-transparent transition-all hover:bg-[var(--accent-muted)] hover:border-[var(--border-strong)]"
             title="Open in Telegram"
           >
             <TelegramLogo size={20} style={{ color: 'var(--text-muted)' }} />

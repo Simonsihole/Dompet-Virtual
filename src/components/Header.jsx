@@ -34,36 +34,36 @@ export default function Header() {
         className="h-[68px] px-8 flex items-center justify-between sticky top-0 z-40 backdrop-blur-md"
         style={{ background: 'var(--bg-canvas)', opacity: 0.98, borderBottom: '1px solid var(--border)' }}
       >
-        <div className="flex items-center gap-3">
-          <h1 className="text-[14px] font-semibold tracking-wide"
+        <div className="flex items-center gap-2 md:gap-3 flex-shrink min-w-0 pr-2">
+          <h1 className="text-[14px] font-semibold tracking-wide truncate"
             style={{ color: 'var(--text-primary)' }}>
             {page.title}
           </h1>
-          <div className="w-[1px] h-3" style={{ background: 'var(--border-strong)' }} />
-          <span className="text-[12px] font-medium" style={{ color: 'var(--text-muted)' }}>
+          <div className="w-[1px] h-3 hidden sm:block" style={{ background: 'var(--border-strong)' }} />
+          <span className="text-[12px] font-medium hidden sm:block truncate" style={{ color: 'var(--text-muted)' }}>
             {page.subtitle}
           </span>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
           {/* Theme toggle */}
           <button
-            className="p-2 rounded-xl border border-transparent transition-all duration-200 hover:bg-[var(--bg-elevated)]"
+            className="w-10 h-10 md:w-11 md:h-11 flex items-center justify-center rounded-xl border border-transparent transition-all duration-200 hover:bg-[var(--bg-elevated)]"
             onClick={toggleTheme}
           >
             {isDark ? (
-              <Sun size={18} style={{ color: 'var(--text-muted)' }} />
+              <Sun size={20} style={{ color: 'var(--text-muted)' }} />
             ) : (
-              <Moon size={18} style={{ color: 'var(--text-muted)' }} />
+              <Moon size={20} style={{ color: 'var(--text-muted)' }} />
             )}
           </button>
           
           {/* Search button */}
           <button
-            className="p-2 rounded-xl border border-transparent transition-all duration-200 hover:bg-[var(--bg-elevated)]"
+            className="w-10 h-10 md:w-11 md:h-11 flex items-center justify-center rounded-xl border border-transparent transition-all duration-200 hover:bg-[var(--bg-elevated)]"
             onClick={() => setSearchOpen(true)}
           >
-            <MagnifyingGlass size={18} style={{ color: 'var(--text-muted)' }} />
+            <MagnifyingGlass size={20} style={{ color: 'var(--text-muted)' }} />
           </button>
 
           {/* Notifications bell */}
@@ -78,19 +78,19 @@ export default function Header() {
             />
           </div>
 
-          <div className="w-[1px] h-4 mx-2" style={{ background: 'var(--border-strong)' }} />
+          <div className="w-[1px] h-5 mx-1 md:mx-2 hidden sm:block" style={{ background: 'var(--border-strong)' }} />
 
           {/* Avatar */}
           <Link 
             to="/settings"
-            className="w-8 h-8 rounded-full flex items-center justify-center border transition-all duration-200 hover:scale-105"
+            className="w-9 h-9 md:w-10 md:h-10 ml-1 rounded-full flex items-center justify-center border transition-all duration-200 hover:scale-105"
             style={{ 
               background: 'linear-gradient(135deg, var(--accent) 0%, #3B82F6 100%)', 
               borderColor: 'var(--border)', 
-              boxShadow: '0 0 12px rgba(16,185,129,0.3)' 
+              boxShadow: '0 0 12px rgba(16,185,129,0.2)' 
             }}
           >
-            <span className="text-[11px] font-bold text-white tracking-wider">JD</span>
+            <span className="text-[12px] font-bold text-white tracking-wider">JD</span>
           </Link>
         </div>
       </header>

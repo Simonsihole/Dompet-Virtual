@@ -39,27 +39,29 @@ function TxRow({ tx }) {
   const isIncome = tx.type === 'income';
 
   return (
-    <div className="flex items-center gap-4 px-3 py-3 transition-colors duration-200 hover:bg-[var(--accent-muted)] rounded-xl group border border-transparent hover:border-[var(--border-strong)]">
+    <div className="flex items-start gap-4 px-3 py-3 transition-colors duration-200 hover:bg-[var(--accent-muted)] rounded-xl group border border-transparent hover:border-[var(--border-strong)]">
       <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover:scale-105" 
            style={{ background: cfg.bg, border: `1px solid ${cfg.color}30` }}>
         <Icon size={18} weight="duotone" style={{ color: cfg.color }} />
       </div>
       
       <div className="flex-1 min-w-0 flex flex-col justify-center">
-        <p className="text-[14px] font-medium truncate transition-colors duration-200" 
-           style={{ color: 'var(--text-primary)' }}>
-          {tx.description}
-        </p>
-        <p className="text-[12px] mt-0.5 tracking-wide" style={{ color: 'var(--text-muted)' }}>
-          {tx.category} · {time}
-        </p>
-      </div>
-      
-      <div className="flex-shrink-0 text-right pl-4">
-        <p className="text-[15px] font-mono tracking-tight"
-          style={{ color: isIncome ? 'var(--accent)' : 'var(--text-primary)' }}>
-          {isIncome ? '+' : '-'}{formatRupiah(tx.amount)}
-        </p>
+        <div className="flex justify-between items-center mb-0.5">
+          <p className="text-[14px] font-medium truncate transition-colors duration-200" style={{ color: 'var(--text-primary)' }}>
+            {tx.description}
+          </p>
+          <p className="text-[14px] font-mono tracking-tight flex-shrink-0 pl-3" style={{ color: isIncome ? 'var(--accent)' : 'var(--text-primary)' }}>
+            {isIncome ? '+' : '-'}{formatRupiah(tx.amount)}
+          </p>
+        </div>
+        <div className="flex justify-between items-center">
+          <p className="text-[12px] tracking-wide truncate" style={{ color: 'var(--text-muted)' }}>
+            {tx.category}
+          </p>
+          <p className="text-[11px] tracking-wide flex-shrink-0 pl-3" style={{ color: 'var(--text-subtle)' }}>
+            {time}
+          </p>
+        </div>
       </div>
     </div>
   );
